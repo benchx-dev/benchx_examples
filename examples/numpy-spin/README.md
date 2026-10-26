@@ -11,6 +11,13 @@ Demo running an out-of-tree benchmark for NumPy. Demonstrates:
 - storing the results according to the schema.
 
 
+Note that here we use `spin` to build numpy, and run benchmarks separately. If you control
+the `spin` in your repository to be benchmarked, you may want to hide the `bx` benchmarking
+invocations in a dedicated spin command instead (a la numpy's `spin bench`). This might be
+simpler than what is done here, actually. The demonstration here is mainly to show what
+you _can_ do only.
+
+
 After running
 
 ```
