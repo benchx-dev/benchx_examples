@@ -1,11 +1,11 @@
 {
  "schema_version": "benchx/work-order/0.1.0",
- "work_order_id": "urn:uuid:5f386465-7654-429c-8d9c-68bbc8ca792a",
+ "work_order_id": "urn:uuid:12820026-8d22-422b-88bf-d02ad9a58232",
  "state": "resolved",
  "suites": [
   {
    "adapter": "pyperf",
-   "suite": "/home/ev-br/proj/quansight/benchx_user/numpy-bench/bench_linalg.py"
+   "suite": "/home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/bench_linalg.py"
   }
  ],
  "target": {
@@ -148,17 +148,17 @@
  "project": "numpy",
  "benchmark": {
   "source": {
-   "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench",
+   "uri": "ssh://git@github.com/~/ev-br/benchx_examples.git",
    "type": "git"
   },
-  "revision": "f3b72b5af764f9993a7645cfe491d15f1271e1c6"
+  "revision": "5321adbc9407b5d86d17404fb4ea4a4d440eb544"
  },
  "collectors": [
   {
    "name": "numpy-build",
    "command": [
     "python",
-    "/home/ev-br/proj/quansight/benchx_user/numpy-bench/numpy_facts.py"
+    "/home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/numpy_facts.py"
    ],
    "verify": "how_built",
    "on_fail": "refuse"

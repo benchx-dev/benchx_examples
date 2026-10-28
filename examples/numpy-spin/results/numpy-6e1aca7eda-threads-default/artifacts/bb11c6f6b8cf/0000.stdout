@@ -1,0 +1,11 @@
+.....................
+WARNING: the benchmark result may be unstable
+* the standard deviation (2.31 ms) is 44% of the mean (5.24 ms)
+* the maximum (13.9 ms) is 165% greater than the mean (5.24 ms)
+
+Try to rerun the benchmark with more runs, values and/or loops.
+Run 'python -m pyperf system tune' command to reduce the system jitter.
+Use pyperf stats, pyperf dump and pyperf hist to analyze results.
+Use --quiet option to hide these warnings.
+
+bench_matmul: Mean +- std dev: 5.24 ms +- 2.31 ms

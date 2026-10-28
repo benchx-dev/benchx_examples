@@ -6,7 +6,7 @@
   "mapping_version": "pyperf-to-benchx/v1"
  },
  "ingest_key": "numpy-v2.4.0:bench_matmul:wall-time",
- "attempt_key": "urn:benchx:attempt:8932e5ebfcaa8d59:0",
+ "attempt_key": "urn:benchx:attempt:95ca22be93cb63f2:0",
  "project": "numpy",
  "source": {
   "uri": "https://github.com/numpy/numpy.git",
@@ -17,11 +17,11 @@
  },
  "benchmark": {
   "source": {
-   "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench",
+   "uri": "ssh://git@github.com/~/ev-br/benchx_examples.git",
    "type": "git"
   },
   "revision": {
-   "key": "f3b72b5af764f9993a7645cfe491d15f1271e1c6"
+   "key": "5321adbc9407b5d86d17404fb4ea4a4d440eb544"
   }
  },
  "coordinates": {
@@ -36,47 +36,34 @@
     }
    ]
   },
-  "quantity": {
-   "name": "wall-time",
-   "unit": "s",
-   "direction": "lower-is-better"
-  },
-  "comparison_context": {
+  "protocol": {
+   "repetitions": {
+    "mode": "fixed",
+    "levels": [
+     {
+      "unit": "process",
+      "n": 20
+     },
+     {
+      "unit": "value",
+      "n": 3
+     }
+    ]
+   },
+   "calibration": {
+    "mode": "adaptive",
+    "minimum_sample_seconds": 0.1
+   },
+   "warmup": {
+    "mode": "count",
+    "n_warmup": 1
+   },
+   "timer": "perf_counter",
+   "gc": "enabled",
+   "environment": "inherit-all",
    "harness": {
     "name": "pyperf",
     "version": "2.10.0"
-   },
-   "protocol": {
-    "repetitions": {
-     "mode": "fixed",
-     "levels": [
-      {
-       "unit": "process",
-       "n": 20
-      },
-      {
-       "unit": "value",
-       "n": 3
-      }
-     ]
-    },
-    "calibration": {
-     "mode": "adaptive",
-     "minimum_sample_seconds": 0.1
-    },
-    "warmup": {
-     "mode": "count",
-     "n_warmup": 1
-    },
-    "timer": "perf_counter",
-    "gc": "enabled",
-    "environment": "inherit-all"
-   },
-   "runtime": {
-    "python_version": "3.12.12 (64-bit)",
-    "python_implementation": "cpython",
-    "python_compiler": "GCC 14.3.0",
-    "python_cflags": "-fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include"
    }
   },
   "environment": {
@@ -86,359 +73,374 @@
     "cpu": "AMD Ryzen Threadripper 3970X 32-Core Processor",
     "cores": 64
    },
-   "metadata": {
-    "architecture": "x86_64"
+   "system": {
+    "architecture": "x86_64",
+    "os": {
+     "family": "Linux",
+     "kernel": "6.8.0-136-generic",
+     "aslr": "Full randomization",
+     "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+     "boot_time": "2026-08-04 18:01:01"
+    },
+    "libc": {
+     "name": "glibc",
+     "version": "2.39"
+    },
+    "cpu": {
+     "governor": "schedutil",
+     "config": "0-63=driver:acpi-cpufreq, governor:schedutil; idle:acpi_idle"
+    },
+    "numpy-build": {
+     "blas": {
+      "name": "openblas",
+      "version": "0.3.30"
+     },
+     "c_compiler": {
+      "name": "gcc",
+      "version": "14.3.0"
+     },
+     "lapack": {
+      "name": "openblas",
+      "version": "0.3.30"
+     },
+     "numpy_version": "2.4.0",
+     "simd_baseline": [
+      "X86_V2"
+     ],
+     "simd_found": [
+      "X86_V3"
+     ],
+     "sha256": "b20d3d142398b8e996137017a765b45d5756ac84adb272d44f58d2391f3666e6"
+    },
+    "runtime": {
+     "python": "3.12.12 (64-bit)",
+     "implementation": "cpython",
+     "compiler": "GCC 14.3.0",
+     "cflags": "-fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include"
+    },
+    "process": {
+     "environment": {}
+    }
    }
   }
  },
  "measurement": {
+  "quantity": {
+   "name": "wall-time",
+   "unit": "s",
+   "direction": "lower-is-better"
+  },
   "status": "success",
   "observations": [
    {
-    "value": 0.006096446653828025,
+    "value": 0.017122189747169614,
     "ordinal": 0,
     "group": "0"
    },
    {
-    "value": 0.007964182208525017,
+    "value": 0.019498937064781785,
     "ordinal": 1,
     "group": "0"
    },
    {
-    "value": 0.0050053375598508865,
+    "value": 0.018124031834304333,
     "ordinal": 2,
     "group": "0"
    },
    {
-    "value": 0.0030036215612199157,
+    "value": 0.01762270031031221,
     "ordinal": 3,
     "group": "1"
    },
    {
-    "value": 0.0030003124848008156,
+    "value": 0.01810849306639284,
     "ordinal": 4,
     "group": "1"
    },
    {
-    "value": 0.0035307204234413803,
+    "value": 0.013385790050961077,
     "ordinal": 5,
     "group": "1"
    },
    {
-    "value": 0.006593453319510445,
+    "value": 0.015368481865152717,
     "ordinal": 6,
     "group": "2"
    },
    {
-    "value": 0.004128770378883928,
+    "value": 0.023125215549953282,
     "ordinal": 7,
     "group": "2"
    },
    {
-    "value": 0.004468577186344191,
+    "value": 0.016368947690352798,
     "ordinal": 8,
     "group": "2"
    },
    {
-    "value": 0.005869661719771102,
+    "value": 0.01251052797306329,
     "ordinal": 9,
     "group": "3"
    },
    {
-    "value": 0.004535637912340462,
+    "value": 0.003751557203941047,
     "ordinal": 10,
     "group": "3"
    },
    {
-    "value": 0.0037138535117264837,
+    "value": 0.00874175934586674,
     "ordinal": 11,
     "group": "3"
    },
    {
-    "value": 0.006342723150737584,
+    "value": 0.01587266253773123,
     "ordinal": 12,
     "group": "4"
    },
    {
-    "value": 0.003468388895271346,
+    "value": 0.013374005095101893,
     "ordinal": 13,
     "group": "4"
    },
    {
-    "value": 0.003063689830014482,
+    "value": 0.009374811314046383,
     "ordinal": 14,
     "group": "4"
    },
    {
-    "value": 0.00302986495080404,
+    "value": 0.012745046988129616,
     "ordinal": 15,
     "group": "5"
    },
    {
-    "value": 0.003997029387392104,
+    "value": 0.014999025384895504,
     "ordinal": 16,
     "group": "5"
    },
    {
-    "value": 0.003096664760960266,
+    "value": 0.012874062289483845,
     "ordinal": 17,
     "group": "5"
    },
    {
-    "value": 0.005192283657379448,
+    "value": 0.011247601825743914,
     "ordinal": 18,
     "group": "6"
    },
    {
-    "value": 0.0033739502250682563,
+    "value": 0.012748993351124227,
     "ordinal": 19,
     "group": "6"
    },
    {
-    "value": 0.005401406553573906,
+    "value": 0.012380109285004437,
     "ordinal": 20,
     "group": "6"
    },
    {
-    "value": 0.00871779813314788,
+    "value": 0.019512746133841574,
     "ordinal": 21,
     "group": "7"
    },
    {
-    "value": 0.004691969370469451,
+    "value": 0.0033723368542268872,
     "ordinal": 22,
     "group": "7"
    },
    {
-    "value": 0.0038388497196137905,
+    "value": 0.002994031412526965,
     "ordinal": 23,
     "group": "7"
    },
    {
-    "value": 0.004404718289151788,
+    "value": 0.01082798233255744,
     "ordinal": 24,
     "group": "8"
    },
    {
-    "value": 0.004124948434764519,
+    "value": 0.013802397297695279,
     "ordinal": 25,
     "group": "8"
    },
    {
-    "value": 0.006838865549070761,
+    "value": 0.014586959849111736,
     "ordinal": 26,
     "group": "8"
    },
    {
-    "value": 0.0030021674174349755,
+    "value": 0.009264877648092806,
     "ordinal": 27,
     "group": "9"
    },
    {
-    "value": 0.0030013599316589534,
+    "value": 0.011353329289704561,
     "ordinal": 28,
     "group": "9"
    },
    {
-    "value": 0.003092633589403704,
+    "value": 0.015748722478747368,
     "ordinal": 29,
     "group": "9"
    },
    {
-    "value": 0.002969640656374395,
+    "value": 0.008989955997094512,
     "ordinal": 30,
     "group": "10"
    },
    {
-    "value": 0.005186460097320378,
+    "value": 0.008360026637092233,
     "ordinal": 31,
     "group": "10"
    },
    {
-    "value": 0.0030006024171598256,
+    "value": 0.008997067343443632,
     "ordinal": 32,
     "group": "10"
    },
    {
-    "value": 0.008128766959998757,
+    "value": 0.014993819175288081,
     "ordinal": 33,
     "group": "11"
    },
    {
-    "value": 0.0030935802205931395,
+    "value": 0.015123923192732036,
     "ordinal": 34,
     "group": "11"
    },
    {
-    "value": 0.002999995253048837,
+    "value": 0.010139888501726091,
     "ordinal": 35,
     "group": "11"
    },
    {
-    "value": 0.0029987402667757124,
+    "value": 0.009515588055364788,
     "ordinal": 36,
     "group": "12"
    },
    {
-    "value": 0.004120275727473199,
+    "value": 0.013847421738319099,
     "ordinal": 37,
     "group": "12"
    },
    {
-    "value": 0.006031039549270645,
+    "value": 0.005508209113031626,
     "ordinal": 38,
     "group": "12"
    },
    {
-    "value": 0.004222979536280036,
+    "value": 0.012747944798320532,
     "ordinal": 39,
     "group": "13"
    },
    {
-    "value": 0.0034691226319409907,
+    "value": 0.00638263626024127,
     "ordinal": 40,
     "group": "13"
    },
    {
-    "value": 0.003936603054171428,
+    "value": 0.005985001800581813,
     "ordinal": 41,
     "group": "13"
    },
    {
-    "value": 0.004972653987351805,
+    "value": 0.013497562846168876,
     "ordinal": 42,
     "group": "14"
    },
    {
-    "value": 0.0029995906515978277,
+    "value": 0.015123830758966506,
     "ordinal": 43,
     "group": "14"
    },
    {
-    "value": 0.003937713394407183,
+    "value": 0.01637434703297913,
     "ordinal": 44,
     "group": "14"
    },
    {
-    "value": 0.007026084029348567,
+    "value": 0.014992319280281663,
     "ordinal": 45,
     "group": "15"
    },
    {
-    "value": 0.006192430737428367,
+    "value": 0.009372382774017751,
     "ordinal": 46,
     "group": "15"
    },
    {
-    "value": 0.002999232237925753,
+    "value": 0.016620007227174938,
     "ordinal": 47,
     "group": "15"
    },
    {
-    "value": 0.0032855421595741063,
+    "value": 0.019119225908070803,
     "ordinal": 48,
     "group": "16"
    },
    {
-    "value": 0.0029998516547493637,
+    "value": 0.00899873988237232,
     "ordinal": 49,
     "group": "16"
    },
    {
-    "value": 0.0029996297671459615,
+    "value": 0.01662453101016581,
     "ordinal": 50,
     "group": "16"
    },
    {
-    "value": 0.004504545853706077,
+    "value": 0.0034823118476197124,
     "ordinal": 51,
     "group": "17"
    },
    {
-    "value": 0.0042802584648597986,
+    "value": 0.005979906884022057,
     "ordinal": 52,
     "group": "17"
    },
    {
-    "value": 0.004620531864929944,
+    "value": 0.0071427031653001904,
     "ordinal": 53,
     "group": "17"
    },
    {
-    "value": 0.005935024586506188,
+    "value": 0.012742823455482721,
     "ordinal": 54,
     "group": "18"
    },
    {
-    "value": 0.004874122561886907,
+    "value": 0.006745617720298469,
     "ordinal": 55,
     "group": "18"
    },
    {
-    "value": 0.009843102685408667,
+    "value": 0.01574595645070076,
     "ordinal": 56,
     "group": "18"
    },
    {
-    "value": 0.007285040046554059,
+    "value": 0.011997920460999012,
     "ordinal": 57,
     "group": "19"
    },
    {
-    "value": 0.0044061162625439465,
+    "value": 0.011123829521238804,
     "ordinal": 58,
     "group": "19"
    },
    {
-    "value": 0.004000126209575683,
+    "value": 0.008374496828764677,
     "ordinal": 59,
     "group": "19"
    }
   ]
  },
- "observed_context": {
-  "os": "Linux",
-  "kernel": "6.8.0-136-generic",
-  "libc": "glibc-2.39",
-  "governor": "schedutil",
-  "load_avg_1m": 13.36,
-  "numpy-build": {
-   "blas": {
-    "name": "openblas",
-    "version": "0.3.30"
-   },
-   "c_compiler": {
-    "name": "gcc",
-    "version": "14.3.0"
-   },
-   "lapack": {
-    "name": "openblas",
-    "version": "0.3.30"
-   },
-   "numpy_version": "2.4.0",
-   "simd_baseline": [
-    "X86_V2"
-   ],
-   "simd_found": [
-    "X86_V3"
-   ],
-   "sha256": "b20d3d142398b8e996137017a765b45d5756ac84adb272d44f58d2391f3666e6"
-  },
-  "env": {},
-  "pyperf": {
-   "cpu_config": "0-63=driver:acpi-cpufreq, governor:schedutil; idle:acpi_idle",
-   "aslr": "Full randomization",
-   "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
-   "boot_time": "2026-08-04 18:01:01"
-  }
- },
  "procedure": {
   "attempted_repetitions": 60,
   "completed_repetitions": 60,
-  "inner_iterations": 32,
+  "inner_iterations": 8,
   "warmups_performed": 20,
   "calibration_runs": 1,
-  "duration_seconds": 19.283858,
+  "duration_seconds": 14.470739,
   "timeout_seconds": 60,
   "repetition_levels": [
    {
@@ -455,8 +457,8 @@
  },
  "provenance": {
   "run_key": "numpy-v2.4.0",
-  "started_at": "2026-10-21T11:00:30.007042Z",
-  "ended_at": "2026-10-21T11:00:49.290900Z",
+  "started_at": "2026-10-26T20:44:58.919984Z",
+  "ended_at": "2026-10-26T20:45:13.390723Z",
   "subject_dirty": "clean",
   "benchmark_dirty": "clean",
   "runner": {
@@ -467,42 +469,42 @@
    {
     "kind": "native-output",
     "media_type": "application/json",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/0000.native.json",
-    "sha256": "6549601c6cf28aeac74f84991cec211c3d2475e476fc7369910a7ff2d6fc3c1c"
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/0000.native.json",
+    "sha256": "aca3015991d55b13692af5dd6138b04ddb6ad96378236f961a949d2c1e353f2e"
    },
    {
     "kind": "stdout",
     "media_type": "text/plain",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/0000.stdout",
-    "sha256": "c69f8ed832c4c822f0488308e868241e79667f08911fe03a4e3e4f75e1f5046b"
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/0000.stdout",
+    "sha256": "9f68eabbb1477b37cd201d292c940b757492c0773092098db33e8fc6c2a1536c"
    },
    {
     "kind": "stderr",
     "media_type": "text/plain",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/0000.stderr",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/0000.stderr",
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
    },
    {
     "kind": "driver",
     "media_type": "text/x-python",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/0000.driver.py",
-    "sha256": "45c6245cae557b3ee72e312b2a73d25fe0a74bd6118260c822a1da60e21892c8"
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/0000.driver.py",
+    "sha256": "2b51ae0c204aed7ecfff35eacac32d90cc32ac4375fabd4d6ad6e95ac08afc04"
    },
    {
     "kind": "worker-environment",
     "media_type": "application/json",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/0000.worker-env.json",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/0000.worker-env.json",
     "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
    },
    {
     "kind": "collector-output",
     "media_type": "application/json",
-    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/results/numpy-v2.4.0/artifacts/8932e5ebfcaa/collector-numpy-build.json",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-v2.4.0/artifacts/95ca22be93cb/collector-numpy-build.json",
     "sha256": "db79925c0ccf0c4ed69a1ccd2d3ac4595b788014a5f3adeecf79efb85334ed9f"
    }
   ],
   "info": {
-   "workorder_ref": "sha256:8932e5ebfcaa8d59f5c4523fb89fd5efa2dbcf96f85c28dbc1d0b7036444210d",
+   "workorder_ref": "sha256:95ca22be93cb63f245901ff24ed01594e4b4f34d490280b6a727d42d34afb23d",
    "requester": {
     "kind": "workbench",
     "name": "bx"
@@ -512,11 +514,7 @@
     "cpu_model_name": "AMD Ryzen Threadripper 3970X 32-Core Processor",
     "cpu_count": 64,
     "python_executable": "/home/ev-br/.conda/envs/numpy-dev/bin/python",
-    "library_version": "2.10.0",
-    "python_version": "3.12.12 (64-bit)",
-    "python_implementation": "cpython",
-    "python_compiler": "GCC 14.3.0",
-    "python_cflags": "-fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include"
+    "library_version": "2.10.0"
    },
    "how_built": {
     "numpy_version": "2.4.0",
