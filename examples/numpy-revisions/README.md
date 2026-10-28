@@ -37,14 +37,21 @@ $ micromamba activate numpy-revisions
 $ pip install -e /path/to/benchx/prototype
 ```
 
-The benchmark file is recorded as the benchmark's own source, so it must be committed
-and unmodified: commit this directory before running. Then:
+The benchmark file is recorded as the benchmark's own source. If it is not committed, or
+has been edited, the comparison still runs and is labeled local-only (it says so before
+measuring, and `bx head` marks the results); commit this directory first for a comparison
+that is not. Then:
 
 ```
 $ NUMPY=~/repos/numpy ./compare.sh v2.4.0 v2.4.3
 ```
 
-The two revisions are any tags, branches or commits of `$NUMPY`. The first run builds
+The two revisions are any tags, branches or commits of `$NUMPY`, or `WORKSPACE`, which
+is the checkout in `$NUMPY` itself. That one is built in place and must have its
+submodules initialized. It may have uncommitted changes: the comparison is then labeled
+local-only, and says which side is not clean before measuring. A checkout git cannot hash,
+such as one with an unreadable untracked file, is refused. Local changes in `$NUMPY` do not
+matter for the other revisions, which are built in worktrees. The first run builds
 both (a few minutes each on a many-core machine); later runs reuse the worktrees,
 which are named after the revision and its commit, such as `v2.4.0-c5ab79c14c`. They
 stay under `$WORKTREES` (by default `$NUMPY-worktrees`); remove one with
