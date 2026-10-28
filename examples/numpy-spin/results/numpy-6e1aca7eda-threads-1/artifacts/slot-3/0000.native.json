@@ -1,0 +1,184 @@
+{
+ "benchmarks": [
+  {
+   "runs": [
+    {
+     "metadata": {
+      "calibrate_loops": 64,
+      "cpu_freq": "0-11,13-15,17-23,25-29,32-35,37-58,60-63=2200 MHz; 12=4128 MHz; 16,36=4135 MHz; 24=2691 MHz; 30=3700 MHz; 31=2057 MHz; 59=4149 MHz",
+      "date": "2026-10-27 09:26:27.088562",
+      "duration": 0.7275723330676556,
+      "runnable_threads": 3,
+      "uptime": 7226726.091068745
+     },
+     "warmups": [
+      [
+       1,
+       0.0032555116340517998
+      ],
+      [
+       2,
+       0.0024508056230843067
+      ],
+      [
+       4,
+       0.0022140105720609426
+      ],
+      [
+       8,
+       0.0022123679518699646
+      ],
+      [
+       16,
+       0.0022156512131914496
+      ],
+      [
+       32,
+       0.0022126204858068377
+      ],
+      [
+       64,
+       0.0021996514551574364
+      ],
+      [
+       64,
+       0.0021937891870038584
+      ],
+      [
+       64,
+       0.002222570954472758
+      ],
+      [
+       64,
+       0.0021987979853292927
+      ]
+     ]
+    },
+    {
+     "metadata": {
+      "cpu_freq": "0-6,9-15,17-24,27-31,33,35,38-63=2200 MHz; 7=2097 MHz; 8,36=4128 MHz; 16=4135 MHz; 25=2892 MHz; 26=3859 MHz; 32,34=3700 MHz; 37=2086 MHz",
+      "date": "2026-10-27 09:26:27.820773",
+      "duration": 0.5879731345921755,
+      "runnable_threads": 3,
+      "uptime": 7226726.823615551
+     },
+     "values": [
+      0.0022018433519406244,
+      0.0022000973985996097,
+      0.002189043501857668
+     ],
+     "warmups": [
+      [
+       64,
+       0.002253439466585405
+      ]
+     ]
+    },
+    {
+     "metadata": {
+      "cpu_freq": "0-7,11,13-15,17,19-21,23-25,28-31,34-59,61-63=2200 MHz; 8=2179 MHz; 9=2184 MHz; 10=2199 MHz; 12=4078 MHz; 16=4100 MHz; 18=2062 MHz; 22=2129 MHz; 26=4090 MHz; 27=2051 MHz; 32,60=3700 MHz; 33=4095 MHz",
+      "date": "2026-10-27 09:26:28.545295",
+      "duration": 0.5799805950373411,
+      "runnable_threads": 3,
+      "uptime": 7226727.547991037
+     },
+     "values": [
+      0.0021575035789282992,
+      0.0021740344091085717,
+      0.0021884931629756466
+     ],
+     "warmups": [
+      [
+       64,
+       0.0022056887100916356
+      ]
+     ]
+    },
+    {
+     "metadata": {
+      "cpu_freq": "0-11,13-15,17-23,25-31,34-58,60-63=2200 MHz; 12=4105 MHz; 16=4075 MHz; 24=4121 MHz; 32=3700 MHz; 33=4123 MHz; 59=4147 MHz",
+      "date": "2026-10-27 09:26:29.274528",
+      "duration": 0.5853683520108461,
+      "runnable_threads": 3,
+      "uptime": 7226728.276937008
+     },
+     "values": [
+      0.002198227055487223,
+      0.0021895478857913986,
+      0.002188256476074457
+     ],
+     "warmups": [
+      [
+       64,
+       0.002240718065877445
+      ]
+     ]
+    },
+    {
+     "metadata": {
+      "cpu_freq": "0,2-4,6-11,13-15,17-23,25,27-28,30-32,34,36-50,52-58,60-63=2200 MHz; 1=1867 MHz; 5=2196 MHz; 12=4106 MHz; 16=4105 MHz; 24=4135 MHz; 26=2063 MHz; 29=2067 MHz; 33=3587 MHz; 35=2800 MHz; 51=2057 MHz; 59=3700 MHz",
+      "date": "2026-10-27 09:26:29.996344",
+      "duration": 0.5789439417421818,
+      "runnable_threads": 5,
+      "uptime": 7226728.999167919
+     },
+     "values": [
+      0.0021763980330433697,
+      0.0021753462933702394,
+      0.0021625908266287297
+     ],
+     "warmups": [
+      [
+       64,
+       0.0021964014158584177
+      ]
+     ]
+    },
+    {
+     "metadata": {
+      "cpu_freq": "0,2-6,8-11,13-15,17,19-35,37,39-63=2200 MHz; 1=4148 MHz; 7=2274 MHz; 12,16=4111 MHz; 18=2099 MHz; 36=3556 MHz; 38=3473 MHz",
+      "date": "2026-10-27 09:26:30.716799",
+      "duration": 0.5779393091797829,
+      "runnable_threads": 3,
+      "uptime": 7226729.7198450565
+     },
+     "values": [
+      0.0021653163275914267,
+      0.0021615073492284864,
+      0.00215598481008783
+     ],
+     "warmups": [
+      [
+       64,
+       0.00219509749149438
+      ]
+     ]
+    }
+   ]
+  }
+ ],
+ "metadata": {
+  "aslr": "Full randomization",
+  "benchx_env_sha256": "6b316393a88a1d41b140618edcd42a923bd26c5062d2c7defbd68080d5dc177f",
+  "boot_time": "2026-08-04 18:01:01",
+  "cpu_config": "0-63=driver:acpi-cpufreq, governor:schedutil; idle:acpi_idle",
+  "cpu_count": 64,
+  "cpu_model_name": "AMD Ryzen Threadripper 3970X 32-Core Processor",
+  "hostname": "qgpu3",
+  "load_avg_1min": 3.15,
+  "loops": 64,
+  "mem_max_rss": 44040192,
+  "name": "bench_matmul",
+  "perf_version": "2.10.0",
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+  "python_cflags": "-fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include",
+  "python_compiler": "GCC 14.3.0",
+  "python_config_args": "'--prefix=/home/ev-br/.conda/envs/numpy-dev''--build=x86_64-conda-linux-gnu''--host=x86_64-conda-linux-gnu''--enable-ipv6''--with-ensurepip=no''--with-tzpath=/home/ev-br/.conda/envs/numpy-dev/share/zoneinfo:/home/ev-br/.conda/envs/numpy-dev/share/tzinfo''--with-computed-gotos''--with-system-expat''--enable-loadable-sqlite-extensions''--with-tcltk-includes=-I/home/ev-br/.conda/envs/numpy-dev/include''--with-tcltk-libs=-L/home/ev-br/.conda/envs/numpy-dev/lib -ltcl8.6 -ltk8.6''--with-platlibdir=lib''--with-lto=full''--enable-optimizations''-oldincludedir=/home/conda/feedstock_root/build_artifacts/python-split_1761174448471/_build_env/x86_64-conda-linux-gnu/sysroot/usr/include''--disable-shared''PROFILE_TASK=-m test --pgo''build_alias=x86_64-conda-linux-gnu''host_alias=x86_64-conda-linux-gnu''PKG_CONFIG_PATH=/home/ev-br/.conda/envs/numpy-dev/lib/pkgconfig''MACHDEP=linux''CC=gcc''CFLAGS= -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include ''LDFLAGS= -Wl,--allow-shlib-undefined -Wl,-rpath,/home/ev-br/.conda/envs/numpy-dev/lib -Wl,-rpath-link,/home/ev-br/.conda/envs/numpy-dev/lib -L/home/ev-br/.conda/envs/numpy-dev/lib''CPPFLAGS=-DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -I/home/ev-br/.conda/envs/numpy-dev/include''CPP=/home/conda/feedstock_root/build_artifacts/python-split_1761174448471/_build_env/bin/cpp'",
+  "python_executable": "/home/ev-br/.conda/envs/numpy-dev/bin/python",
+  "python_implementation": "cpython",
+  "python_version": "3.12.12 (64-bit)",
+  "timer": "clock_gettime(CLOCK_MONOTONIC), resolution: 1.00 ns",
+  "unit": "second"
+ },
+ "version": "1.0"
+}

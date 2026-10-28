@@ -14,6 +14,11 @@ In both cases:
   ("am I benchmarking the version I think I am benchmarking" kind of question).
 - storing the results according to the schema.
 
+The runs here cannot be compared afterwards with `bx compare`, which reads one run
+that holds both sides, while `track.sh` makes a run per revision. To compare two
+revisions of NumPy in a single `bx compare`, with both `spin` builds side by side and
+no `PYTHONPATH`, see [`numpy-revisions`](../numpy-revisions/).
+
 ## Tracking example
 
 Note that here we use `spin` to build numpy, and run benchmarks separately. If you control
