@@ -7,7 +7,9 @@ where the benchmark runs; the revision is read from the checkout $NUMPY.
 
 how_built is an object: what numpy says about itself, asked of the Python that PATH and
 PYTHONPATH select, in $BUILD (numpy_facts.py). The collector in benchx.conf.json asks
-the same of the benchmark's environment, and the run is refused if the two differ.
+the same of the benchmark's environment, and the run is refused if the two differ. Both
+also require `imported_from_target`: that this numpy lives in $BUILD, which a numpy of
+the same version installed elsewhere would not.
 
 The provider also refuses to describe a numpy that is not the checkout's HEAD (a build
 not redone after `git checkout`): the version of a numpy built from git ends in the
@@ -34,6 +36,9 @@ if done.returncode:
     sys.exit(f"provider.py: numpy in {build_dir} did not report its facts:\n{done.stderr.strip()}")
 facts = json.loads(done.stdout)
 facts.pop("summary")  # readable extras for the results, not part of the declaration
+if not facts.pop("imported_from_target"):  # an observation, which the collector repeats in the workers
+    sys.exit(f"provider.py: the numpy that PATH and PYTHONPATH select is not the one in {build_dir}:\n"
+             f"{done.stderr.strip()}\nPYTHONPATH should lead into the build's site-packages")
 
 
 def git(*args):

@@ -20,7 +20,8 @@ imports its own build, in one shared environment, with no PYTHONPATH.
 
 how_built is an object: how numpy was built (numpy_facts.py). The collector in
 benchx.conf.json asks the same of the benchmark's process, and the run is refused if
-the two differ. The provider also refuses to describe a numpy that is not the
+the two differ. The collector also expects `imported_from_target`: that the numpy
+imported from the target is the one in it (numpy_facts.py says why). The provider also refuses to describe a numpy that is not the
 checkout's HEAD: the version of a numpy built from git ends in the commit's hash, and
 a release build is the checkout's tag.
 """
@@ -90,6 +91,8 @@ if done.returncode:
     fail(f"the numpy in {package} did not report its facts:\n{done.stderr.strip()}")
 facts = json.loads(done.stdout)
 facts.pop("summary")  # readable extras for the results, not part of the declaration
+if not facts.pop("imported_from_target"):  # an observation, which the collector repeats in the workers
+    fail(f"importing numpy in {package} did not find the numpy in it:\n{done.stderr.strip()}")
 
 # The version spin wrote when it built, read without importing: it is not among the facts.
 version = re.search(r"""^version = ["']([^"']+)["']""", (package / "numpy" / "version.py").read_text(), re.M)[1]

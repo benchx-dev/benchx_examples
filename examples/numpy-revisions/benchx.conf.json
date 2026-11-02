@@ -53,6 +53,9 @@
     "{root}/numpy_facts.py"
    ],
    "verify": "how_built",
+   "expect": {
+    "imported_from_target": true
+   },
    "on_fail": "refuse"
   }
  }

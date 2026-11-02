@@ -86,14 +86,14 @@ benchmark's processes import `v2.4.0-.../build-install/.../numpy` for the baseli
 | **Provider** | Builds nothing and ignores the request. It describes the build in `$BUILD` and refuses it if it isn't the checkout's HEAD. | Handles `prepare` and `describe`. It reads the requested revision, creates the worktree, runs `spin build`, and takes a lock. It makes the same HEAD check. |
 | **Target path** | The build root, `build-install`. | The `site-packages` directory that holds `numpy`. |
 | **Getting numpy imported** | The script exports `PYTHONPATH=$BUILD/usr/lib/python3.12/site-packages/`. That works for one build, but it can't serve two. | No `PYTHONPATH`. The target's directory comes first on `sys.path`, and a stale exported one is harmless. |
-| **Collector facts** | `numpy_version`, the full `show_config`, and a summary. Fine for storing results, but the version fails `sides-agree` in a `revisions` comparison. | BLAS, LAPACK, compiler and SIMD only, so the two sides agree if both builds were configured alike. It imports from the working directory instead of relying on `PYTHONPATH`. |
+| **Collector facts** | `numpy_version`, the full `show_config`, `imported_from_target` and a summary. Fine for storing results, but the version fails `sides-agree` in a `revisions` comparison. | BLAS, LAPACK, compiler and SIMD, plus `imported_from_target`, so the two sides agree if both builds were configured alike. It imports from the working directory instead of relying on `PYTHONPATH`. |
 | **Thread setting** | `num_threads.sh` varies `OPENBLAS_NUM_THREADS` across runs, to see its effect. | Fixed at 1 for both sides, in `benchx.conf.json`. The config also sets the `revisions` profile and 5 rounds. |
 | **Output** | `bx head --table`: one run per revision. A later `bx compare` cannot pair them: it reads one run, which has to hold both sides, and `track.sh` makes a run per revision. | A verdict (`NO CHANGE DETECTED`, effect and noise) plus the table. |
 | **Extras** | The results and the store, in `results/` and `store.parquet`. | `environment.yml`, a `.gitignore` for the results and the store, `compare.sh`, and this README with expected output. |
 
 Shared: the `bench_linalg.py` suite (a copy), the LICENSE, the pyperf adapter and its
 precision settings, the project and source URI, and the provider-plus-collector
-structure with `verify: how_built`.
+structure with `verify: how_built` and `expect: imported_from_target`.
 
 ## Notes
 
@@ -103,6 +103,17 @@ structure with `verify: how_built`.
   two different versions fails with `sides-agree`. The facts here are the build configuration, so
   the sides agree only if both builds were configured alike (same BLAS, same compiler,
   same SIMD), which is also worth knowing before trusting a comparison.
+- **The collector checks where numpy is imported from, instead of which version.**
+  `imported_from_target` is true when the numpy that `numpy_facts.py` imports lives
+  under the target's directory, and `benchx.conf.json` expects it (`expect`, with
+  `on_fail: refuse`). Both sides print the same, so `sides-agree` has nothing to object
+  to, but each is computed against its own target, so the run is refused if a side would
+  import a numpy that is not its own build. With the `site-packages` directory as the
+  target that cannot happen here, because `provider.py` has checked that the package is
+  in it; the check is for a provider that reports the build root (as `numpy-spin` does,
+  with an exported `PYTHONPATH`) and for an environment with a numpy of its own on the
+  path. It emulates the benchmark's import, and the benchmark's own process is not
+  observed.
 - **The target is the `site-packages` directory, not `build-install`.** benchx's tests
   (`test_build_import_path.py`) show on a toy package laid out like a `spin` build that,
   with the build directory as the target and nothing exported, `import` fails in every
