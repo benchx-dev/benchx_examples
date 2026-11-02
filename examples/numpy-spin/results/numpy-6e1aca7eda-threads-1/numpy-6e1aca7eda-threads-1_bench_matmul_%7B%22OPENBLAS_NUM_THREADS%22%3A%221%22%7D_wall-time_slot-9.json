@@ -1,0 +1,391 @@
+{
+ "schema_version": 5,
+ "producer": {
+  "name": "benchx/pyperf-adapter",
+  "version": "0.1.0",
+  "mapping_version": "pyperf-to-benchx/v1"
+ },
+ "ingest_key": "numpy-6e1aca7eda-threads-1:bench_matmul/%7B%22OPENBLAS_NUM_THREADS%22%3A%221%22%7D:wall-time:slot-9",
+ "attempt_key": "urn:benchx:attempt:88b206c85a45011c:0",
+ "project": "numpy",
+ "source": {
+  "uri": "https://github.com/numpy/numpy.git",
+  "type": "git"
+ },
+ "revision": {
+  "key": "c5ab79c14c98bfda1e60770ffa23a6130f8267b7"
+ },
+ "benchmark": {
+  "source": {
+   "uri": "ssh://git@github.com/~/ev-br/benchx_examples.git",
+   "type": "git"
+  },
+  "revision": {
+   "key": "0c50df6f3223cfef4fe1e91750e6e2911d10c128"
+  }
+ },
+ "coordinates": {
+  "workload": {
+   "name": "bench_matmul",
+   "parameters": {
+    "OPENBLAS_NUM_THREADS": "1"
+   }
+  },
+  "subject": {
+   "name": "numpy",
+   "components": [
+    {
+     "role": "primary"
+    }
+   ]
+  },
+  "protocol": {
+   "repetitions": {
+    "mode": "fixed",
+    "levels": [
+     {
+      "unit": "process",
+      "n": 5
+     },
+     {
+      "unit": "value",
+      "n": 3
+     }
+    ]
+   },
+   "calibration": {
+    "mode": "adaptive",
+    "minimum_sample_seconds": 0.1
+   },
+   "warmup": {
+    "mode": "count",
+    "n_warmup": 1
+   },
+   "timer": "perf_counter",
+   "gc": "enabled",
+   "environment": "inherit-all",
+   "harness": {
+    "name": "pyperf",
+    "version": "2.10.0"
+   }
+  },
+  "environment": {
+   "schema": "machine/v1",
+   "identity": {
+    "runner": "qgpu3",
+    "cpu": "AMD Ryzen Threadripper 3970X 32-Core Processor",
+    "cores": 64
+   },
+   "system": {
+    "architecture": "x86_64",
+    "os": {
+     "family": "Linux",
+     "kernel": "6.8.0-136-generic",
+     "aslr": "Full randomization",
+     "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.39",
+     "boot_time": "2026-08-04 18:01:01"
+    },
+    "libc": {
+     "name": "glibc",
+     "version": "2.39"
+    },
+    "cpu": {
+     "governor": "schedutil",
+     "config": "0-63=driver:acpi-cpufreq, governor:schedutil; idle:acpi_idle"
+    },
+    "process": {
+     "environment": {
+      "OPENBLAS_NUM_THREADS": "1"
+     }
+    },
+    "numpy-build": {
+     "blas": {
+      "name": "openblas",
+      "version": "0.3.30"
+     },
+     "c_compiler": {
+      "name": "gcc",
+      "version": "14.3.0"
+     },
+     "lapack": {
+      "name": "openblas",
+      "version": "0.3.30"
+     },
+     "numpy_version": "2.4.0",
+     "simd_baseline": [
+      "X86_V2"
+     ],
+     "simd_found": [
+      "X86_V3"
+     ],
+     "sha256": "b20d3d142398b8e996137017a765b45d5756ac84adb272d44f58d2391f3666e6"
+    },
+    "runtime": {
+     "python": "3.12.12 (64-bit)",
+     "implementation": "cpython",
+     "compiler": "GCC 14.3.0",
+     "cflags": "-fno-strict-overflow -Wsign-compare -DNDEBUG -O2 -Wall -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include -fPIC -O2 -isystem /home/ev-br/.conda/envs/numpy-dev/include"
+    }
+   }
+  }
+ },
+ "measurement": {
+  "quantity": {
+   "name": "wall-time",
+   "unit": "s",
+   "direction": "lower-is-better"
+  },
+  "status": "success",
+  "observations": [
+   {
+    "value": 0.0021975795534672216,
+    "ordinal": 0,
+    "group": "0"
+   },
+   {
+    "value": 0.0022076263994676992,
+    "ordinal": 1,
+    "group": "0"
+   },
+   {
+    "value": 0.0021978417498758063,
+    "ordinal": 2,
+    "group": "0"
+   },
+   {
+    "value": 0.0021758795919595286,
+    "ordinal": 3,
+    "group": "1"
+   },
+   {
+    "value": 0.002165733210858889,
+    "ordinal": 4,
+    "group": "1"
+   },
+   {
+    "value": 0.0021643394720740616,
+    "ordinal": 5,
+    "group": "1"
+   },
+   {
+    "value": 0.0021954707917757332,
+    "ordinal": 6,
+    "group": "2"
+   },
+   {
+    "value": 0.002190895887906663,
+    "ordinal": 7,
+    "group": "2"
+   },
+   {
+    "value": 0.002198940666858107,
+    "ordinal": 8,
+    "group": "2"
+   },
+   {
+    "value": 0.0022101151844253764,
+    "ordinal": 9,
+    "group": "3"
+   },
+   {
+    "value": 0.00220779562368989,
+    "ordinal": 10,
+    "group": "3"
+   },
+   {
+    "value": 0.002200821472797543,
+    "ordinal": 11,
+    "group": "3"
+   },
+   {
+    "value": 0.0022118639753898606,
+    "ordinal": 12,
+    "group": "4"
+   },
+   {
+    "value": 0.0022119724162621424,
+    "ordinal": 13,
+    "group": "4"
+   },
+   {
+    "value": 0.0022088557889219373,
+    "ordinal": 14,
+    "group": "4"
+   }
+  ]
+ },
+ "procedure": {
+  "attempted_repetitions": 15,
+  "completed_repetitions": 15,
+  "inner_iterations": 64,
+  "warmups_performed": 5,
+  "calibration_runs": 1,
+  "duration_seconds": 4.670652,
+  "round": 3,
+  "slot": 9,
+  "timeout_seconds": 60,
+  "repetition_levels": [
+   {
+    "unit": "process",
+    "attempted": 5,
+    "completed": 5
+   },
+   {
+    "unit": "value",
+    "attempted": 15,
+    "completed": 15
+   }
+  ]
+ },
+ "provenance": {
+  "run_key": "numpy-6e1aca7eda-threads-1",
+  "started_at": "2026-10-27T09:27:00.898787Z",
+  "ended_at": "2026-10-27T09:27:05.569439Z",
+  "subject_dirty": "clean",
+  "benchmark_dirty": "clean",
+  "runner": {
+   "name": "benchx-prototype",
+   "version": "0.1.0"
+  },
+  "artifacts": [
+   {
+    "kind": "native-output",
+    "media_type": "application/json",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/0000.native.json",
+    "sha256": "c28dc4ee4f74012fbe684745b556ff9913e3492795b70f90e00894ba568acdf9"
+   },
+   {
+    "kind": "stdout",
+    "media_type": "text/plain",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/0000.stdout",
+    "sha256": "397698dba48e6b101e31b377513b6305ea6eca904c132434942ecbde773cc554"
+   },
+   {
+    "kind": "stderr",
+    "media_type": "text/plain",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/0000.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   {
+    "kind": "driver",
+    "media_type": "text/x-python",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/0000.driver.py",
+    "sha256": "6cf959a343e828176c0c8aaa512385195c319286ffaa1b5d0f5a6ccd305e618b"
+   },
+   {
+    "kind": "worker-environment",
+    "media_type": "application/json",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/0000.worker-env.json",
+    "sha256": "b0937bd0a42b89bf7ac3153e15838aaed30aa9f74b525acb947a577f470c98de"
+   },
+   {
+    "kind": "collector-output",
+    "media_type": "application/json",
+    "uri": "file:///home/ev-br/proj/quansight/benchx_user/numpy-bench/examples/numpy-spin/results/numpy-6e1aca7eda-threads-1/artifacts/slot-9/collector-numpy-build.json",
+    "sha256": "db79925c0ccf0c4ed69a1ccd2d3ac4595b788014a5f3adeecf79efb85334ed9f"
+   }
+  ],
+  "info": {
+   "workorder_ref": "sha256:88b206c85a45011cfc768cb0c9efb3561f7b708a77ce147095145a8263fc2753",
+   "requester": {
+    "kind": "workbench",
+    "name": "bx"
+   },
+   "pyperf": {
+    "hostname": "qgpu3",
+    "cpu_model_name": "AMD Ryzen Threadripper 3970X 32-Core Processor",
+    "cpu_count": 64,
+    "python_executable": "/home/ev-br/.conda/envs/numpy-dev/bin/python",
+    "library_version": "2.10.0"
+   },
+   "how_built": {
+    "numpy_version": "2.4.0",
+    "show_config": {
+     "Build Dependencies": {
+      "blas": {
+       "detection method": "pkgconfig",
+       "found": true,
+       "include directory": "/home/ev-br/.conda/envs/numpy-dev/include",
+       "lib directory": "/home/ev-br/.conda/envs/numpy-dev/lib",
+       "name": "openblas",
+       "openblas configuration": "USE_64BITINT=0 DYNAMIC_ARCH=1 DYNAMIC_OLDER= NO_CBLAS= NO_LAPACK=0 NO_LAPACKE= NO_AFFINITY=1 USE_OPENMP=0 PRESCOTT MAX_THREADS=128",
+       "pc file directory": "/home/ev-br/.conda/envs/numpy-dev/lib/pkgconfig",
+       "version": "0.3.30"
+      },
+      "lapack": {
+       "detection method": "pkgconfig",
+       "found": true,
+       "include directory": "/home/ev-br/.conda/envs/numpy-dev/include",
+       "lib directory": "/home/ev-br/.conda/envs/numpy-dev/lib",
+       "name": "openblas",
+       "openblas configuration": "USE_64BITINT=0 DYNAMIC_ARCH=1 DYNAMIC_OLDER= NO_CBLAS= NO_LAPACK=0 NO_LAPACKE= NO_AFFINITY=1 USE_OPENMP=0 PRESCOTT MAX_THREADS=128",
+       "pc file directory": "/home/ev-br/.conda/envs/numpy-dev/lib/pkgconfig",
+       "version": "0.3.30"
+      }
+     },
+     "Compilers": {
+      "c": {
+       "args": "-march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections, -pipe, -isystem, /home/ev-br/.conda/envs/numpy-dev/include, -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /home/ev-br/.conda/envs/numpy-dev/include",
+       "commands": "/home/ev-br/.conda/envs/numpy-dev/bin/x86_64-conda-linux-gnu-cc",
+       "linker": "ld.bfd",
+       "linker args": "-Wl,-O2, -Wl,--sort-common, -Wl,--as-needed, -Wl,-z,relro, -Wl,-z,now, -Wl,--disable-new-dtags, -Wl,--gc-sections, -Wl,--allow-shlib-undefined, -Wl,-rpath,/home/ev-br/.conda/envs/numpy-dev/lib, -Wl,-rpath-link,/home/ev-br/.conda/envs/numpy-dev/lib, -L/home/ev-br/.conda/envs/numpy-dev/lib, -march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections, -pipe, -isystem, /home/ev-br/.conda/envs/numpy-dev/include, -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /home/ev-br/.conda/envs/numpy-dev/include",
+       "name": "gcc",
+       "version": "14.3.0"
+      },
+      "c++": {
+       "args": "-fvisibility-inlines-hidden, -fmessage-length=0, -march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections, -pipe, -isystem, /home/ev-br/.conda/envs/numpy-dev/include, -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /home/ev-br/.conda/envs/numpy-dev/include",
+       "commands": "/home/ev-br/.conda/envs/numpy-dev/bin/x86_64-conda-linux-gnu-c++",
+       "linker": "ld.bfd",
+       "linker args": "-Wl,-O2, -Wl,--sort-common, -Wl,--as-needed, -Wl,-z,relro, -Wl,-z,now, -Wl,--disable-new-dtags, -Wl,--gc-sections, -Wl,--allow-shlib-undefined, -Wl,-rpath,/home/ev-br/.conda/envs/numpy-dev/lib, -Wl,-rpath-link,/home/ev-br/.conda/envs/numpy-dev/lib, -L/home/ev-br/.conda/envs/numpy-dev/lib, -fvisibility-inlines-hidden, -fmessage-length=0, -march=nocona, -mtune=haswell, -ftree-vectorize, -fPIC, -fstack-protector-strong, -fno-plt, -O2, -ffunction-sections, -pipe, -isystem, /home/ev-br/.conda/envs/numpy-dev/include, -DNDEBUG, -D_FORTIFY_SOURCE=2, -O2, -isystem, /home/ev-br/.conda/envs/numpy-dev/include",
+       "name": "gcc",
+       "version": "14.3.0"
+      },
+      "cython": {
+       "commands": "cython",
+       "linker": "cython",
+       "name": "cython",
+       "version": "3.2.2"
+      }
+     },
+     "Machine Information": {
+      "build": {
+       "cpu": "x86_64",
+       "endian": "little",
+       "family": "x86_64",
+       "system": "linux"
+      },
+      "host": {
+       "cpu": "x86_64",
+       "endian": "little",
+       "family": "x86_64",
+       "system": "linux"
+      }
+     },
+     "Python Information": {
+      "path": "/home/ev-br/.conda/envs/numpy-dev/bin/python3.12",
+      "version": "3.12"
+     },
+     "SIMD Extensions": {
+      "baseline": [
+       "X86_V2"
+      ],
+      "found": [
+       "X86_V3"
+      ],
+      "not found": [
+       "X86_V4",
+       "AVX512_ICL",
+       "AVX512_SPR"
+      ]
+     }
+    }
+   },
+   "target_provider": {
+    "name": "provider.py",
+    "version": "2"
+   }
+  },
+  "subject_tree": "edd9d7c22ba2cadef99672f7027fe6650edad05f",
+  "benchmark_tree": "db87984013d0811046e9598c8e447ed59632a4e4"
+ }
+}

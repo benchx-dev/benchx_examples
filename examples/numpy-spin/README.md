@@ -11,8 +11,15 @@ In both cases:
 - benchmark project configuration (`benchx.conf.json`)
 - "target provider" stores build information
 - "environment collector" collects runtime info and check consistency
-  ("am I benchmarking the version I think I am benchmarking" kind of question).
+  ("am I benchmarking the version I think I am benchmarking" kind of question). It also
+  checks that the numpy it finds lives in `$BUILD` (`imported_from_target`): a numpy of
+  the same version installed elsewhere passes the version check, and is refused here.
 - storing the results according to the schema.
+
+The runs here cannot be compared afterwards with `bx compare`, which reads one run
+that holds both sides, while `track.sh` makes a run per revision. To compare two
+revisions of NumPy in a single `bx compare`, with both `spin` builds side by side and
+no `PYTHONPATH`, see [`numpy-revisions`](../numpy-revisions/).
 
 ## Tracking example
 

@@ -1,0 +1,26 @@
+# To use:
+#
+#   $ micromamba create -f environment.yml    # `conda env create` works too
+#   $ micromamba activate numpy-revisions
+#   $ pip install -e /path/to/benchx/prototype   # `bx`
+#
+# NumPy's own build requirements (its environment.yml, without the docs and lint
+# tools), plus what benchx needs: pyperf for the benchmark, pyarrow for the store.
+name: numpy-revisions
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12 # the provider's builds and the benchmark must use the same Python
+  - cython>=3.0
+  - compilers
+  - openblas
+  - nomkl
+  - ninja
+  - pkg-config
+  - meson-python
+  - spin==0.15
+  - ccache
+  - git
+  - pyperf
+  - pyarrow
+  - pip
