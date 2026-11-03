@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # End-to-end demonstration of prototype-design.md §6: both profiles, both shapes.
+# (The design documents named here are in docs/design/ of benchx-dev/benchx.)
 #
 # The script plays the user, and in that role the target provider: it prepares
 # the environment with its own tools, a git repository with two commits and
@@ -11,21 +12,23 @@
 # Every command is printed before it runs, as you would type it: `bx` stands
 # for `$PYTHON -m benchx.cli`, and $WORK for the scratch directory.
 #
-# Needs cmake, a C++ compiler, and network access the first time, to fetch
-# Google Benchmark unless it is installed. ROUNDS=5 by default.
+# Run it with benchx installed, editable, from a benchx checkout
+# (`pip install -e <checkout>/prototype`) in the active environment: PYTHON is that
+# environment's interpreter (default: python). Needs cmake, a C++ compiler, and
+# network access the first time, to fetch Google Benchmark unless it is installed.
+# ROUNDS=5 by default.
 #
 # `bx compare` (measure mode) and `bx run` deliver every result to the one local store,
-# examples/demo/store.parquet (paths.store in examples/demo/benchx.conf.json, the demo's
+# store.parquet in this directory (paths.store in the benchx.conf.json here, the demo's
 # project file, from whose directory every `bx` command runs), so the store and
 # each series' history grow from run to run. `bx head` shows the latest rows
 # at any time. Delete the file to start over.
 set -euo pipefail
 cd "$(dirname "$0")"
-PROTOTYPE=$PWD
-PYTHON=${PYTHON:-$PROTOTYPE/.venv/bin/python}
+DEMO_ROOT=$PWD
+PYTHON=${PYTHON:-python}
 ROUNDS=${ROUNDS:-5}
 WORK=$(mktemp -d)
-DEMO_ROOT=$PROTOTYPE/examples/demo
 STORE=$DEMO_ROOT/store.parquet
 STAMP=$(date -u +%Y%m%dT%H%M%SZ)  # run keys are unique per demo run, so runs accumulate
 RUN_REV="rev-adhoc-$STAMP"
@@ -59,7 +62,7 @@ into() {  # into <file> <bx ...>: run with stdout to a file, printed with its re
 printf '\033[36m$ WORK=%s\033[0m\n' "$WORK" >&2
 
 step "user: a source with two commits, a worktree at each"
-show cp -R examples/demo-suite "$WORK/src"
+show cp -R ../demo-suite "$WORK/src"
 show git -C "$WORK/src" init -q
 show git -C "$WORK/src" add -A
 show git -C "$WORK/src" commit -qm "base"

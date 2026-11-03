@@ -10,8 +10,8 @@
 # (activate.sh) and benchx records the text beside the environment it inherited.
 #
 # Every command is printed before it runs, as you would type it. Run it in an
-# activated environment that has benchx installed (from prototype/:
-# `pip install -e .`, or `uv sync --extra test`). Needs cmake and a C++
+# activated environment that has benchx installed, editable, from a benchx
+# checkout (`pip install -e <checkout>/prototype`). Needs cmake and a C++
 # compiler on PATH, and network access the first time, to fetch Google
 # Benchmark unless installed.
 #

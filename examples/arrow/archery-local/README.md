@@ -3,12 +3,12 @@
 One commit, built two ways (plain and hardened), compared with noise-aware
 verdicts, where the comparison says what was built and how. It follows the
 Arrow local story, "Measure what a build option costs"
-([`docs/user_stories/apache-arrow-local-benchmarking.md`](../../../docs/user_stories/apache-arrow-local-benchmarking.md)),
+([`docs/user_stories/apache-arrow-local-benchmarking.md`](https://github.com/benchx-dev/benchx/blob/main/docs/user_stories/apache-arrow-local-benchmarking.md) in benchx),
 on a small stand-in suite (`../demo-suite`: a quiet and a noisy Google
 Benchmark case, where hardening adds about 3% of work).
 
 It exercises the target-provider contract of
-[`system-decomposition.md`](../../../docs/design/system-decomposition.md) §3.4:
+[`system-decomposition.md`](https://github.com/benchx-dev/benchx/blob/main/docs/design/system-decomposition.md) §3.4:
 
 - **You are the user, and the provider is your build script.** `provider.sh`
   configures and builds with CMake, as `archery` or a contributor would. benchx
@@ -27,13 +27,14 @@ It exercises the target-provider contract of
 
 You need `cmake`, a C++ compiler, `git` and `python3` on your `PATH`, and network
 access the first time (CMake fetches Google Benchmark v1.9.1 unless it is
-installed). From the repository root:
+installed). Install benchx in editable mode from a checkout, which is where it reads
+its schemas from, then run the script from the root of this repository:
 
 ```console
-$ cd prototype
+$ git clone https://github.com/benchx-dev/benchx.git
 $ python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
-$ pip install -e .
-$ examples/archery-local/run.sh
+$ pip install -e benchx/prototype
+$ bash examples/arrow/archery-local/run.sh
 ```
 
 It takes about two minutes the first time (two CMake builds and a measured
@@ -129,13 +130,13 @@ runner simply omits it from the results.
 | `activate.sh` | the environment you activate before calling `bx` |
 | `_work/` | everything generated: source copy, build directories, results, store (git-ignored) |
 
-The documents involved are in `../../../schemas/`: `target-provider-request`,
+The documents involved are in [`schemas/`](https://github.com/benchx-dev/benchx/tree/main/schemas) of benchx: `target-provider-request`,
 `target-description`, and `work-order` (its `target` takes the declared text).
 
 ## What this does not show
 
 The provider here builds one source tree, `WORKSPACE`. Comparing against a tag
 or a past revision (`@plain=v1.0`) is the provider's business and is not
-implemented in this example; the prototype's own `demo.sh` shows revisions
+implemented in this example; the [`demo`](../demo/run.sh) example shows revisions
 with two prebuilt worktrees. A declared `build` object in a description is
 refused by the prototype's runner (it reads `CMakeCache.txt` instead).
