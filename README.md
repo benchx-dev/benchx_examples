@@ -9,4 +9,5 @@ Currently, the following examples are provided:
 - `examples/numpy-spin`: out-of-tree benchmarks for NumPy, using `spin` to build NumPy itself;
 - `examples/arrow`: Arrow-shaped examples with Google Benchmark and CMake: a walkthrough of both
   comparison profiles (`demo`) and one of the target provider contract (`archery-local`).
+- `examples/pyperf-suite`: a suite of Python functions benchmarked with `bx bench`, results stored locally.
 

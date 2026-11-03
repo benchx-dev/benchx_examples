@@ -4,8 +4,8 @@
 #   ./run.sh                 uses benchx.conf.json here (5 processes x 3 values)
 #   ./run.sh --processes 20  extra arguments go to `bx bench` and win over the file
 #
-# Run it in an activated environment that has benchx installed with pyperf
-# (from prototype/: `pip install -e . pyperf`, or `uv sync --extra test`).
+# Run it in an activated environment that has benchx installed with pyperf: in editable
+# mode, from a benchx checkout (`pip install -e <checkout>/prototype pyperf`).
 # Results go to ./out, and the local store to ./out/store.parquet (both set in
 # benchx.conf.json), so nothing outside this directory changes.
 set -euo pipefail

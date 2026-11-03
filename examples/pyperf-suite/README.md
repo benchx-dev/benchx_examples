@@ -6,11 +6,14 @@ writes benchx result files, delivers them to a local store, and prints a table.
 
 ## Run it
 
+Install benchx in editable mode from a checkout (it reads its schemas from there), with
+pyperf, then run the script from the root of this repository:
+
 ```sh
-cd prototype
+git clone https://github.com/benchx-dev/benchx.git
 python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
-pip install -e . pyperf
-examples/pyperf-bench/run.sh
+pip install -e benchx/prototype pyperf
+bash examples/pyperf-suite/run.sh
 ```
 
 The script runs `bx` and `python` from the active environment, so benchx and pyperf must
