@@ -10,4 +10,4 @@ Currently, the following examples are provided:
 - `examples/arrow`: Arrow-shaped examples with Google Benchmark and CMake: a walkthrough of both
   comparison profiles (`demo`) and one of the target provider contract (`archery-local`).
 - `examples/pyperf-suite`: a suite of Python functions benchmarked with `bx bench`, results stored locally.
-
+- `examples/matmul-params`: parametrized benchmarks to compare installed NumPy and PyTorch
