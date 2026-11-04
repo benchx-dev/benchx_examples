@@ -6,10 +6,11 @@ case, under [pyperf](https://pyperf.readthedocs.io).
 
 ## Run it
 
-From `prototype/`, in an environment of your choice:
+In an environment of your choice:
 
 ```sh
-pip install -e . pyperf numpy torch
+pip install pyperf numpy
+pip install torch --index-url https://download.pytorch.org/whl/cpu
 cd examples/matmul-params
 export BENCHX_HOME=$PWD/out/home      # optional: keep the result store here, not in ~
 bx bench bench_matmul.py --out out
