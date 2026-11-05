@@ -2,10 +2,25 @@
 # UC-04 with two venvs: the same code under two numpy versions, measured by separate `bx bench`
 # calls that alternate round by round, then compared. See README.md for what each step shows.
 #
-# Needs `uv`. Everything it creates is here: .venv-a, .venv-b and out/ (git-ignored).
+# Needs `uv`, and an active environment with benchx installed in editable mode from a benchx
+# checkout (`pip install -e <checkout>/prototype`). That checkout is installed in both venvs;
+# set BENCHX_SRC to the directory with its pyproject.toml to name it instead.
+# Everything it creates is here: .venv-a, .venv-b and out/ (git-ignored).
 # benchx builds nothing.
 set -euo pipefail
 cd "$(dirname "$0")"
+
+# Where the venvs get benchx from: the checkout that the active environment's benchx runs from.
+BENCHX_SRC=${BENCHX_SRC:-}
+if [ -z "$BENCHX_SRC" ]; then
+  BENCHX_SRC=$(python -c 'import benchx, pathlib; print(pathlib.Path(benchx.__file__).resolve().parents[1])' 2>/dev/null) || true
+fi
+if [ -z "$BENCHX_SRC" ] || [ ! -f "$BENCHX_SRC/pyproject.toml" ]; then
+  echo "run.sh: cannot find a benchx checkout to install in the venvs." >&2
+  echo "  Install benchx in editable mode in the active environment (pip install -e <checkout>/prototype)," >&2
+  echo "  or set BENCHX_SRC to the directory with benchx's pyproject.toml." >&2
+  exit 1
+fi
 
 # provider.py reads the numpy versions from the environment. numpy 1.26.4 has no wheels beyond
 # Python 3.12, so both venvs use it. Three rounds are the fewest that give a verdict.
@@ -19,12 +34,12 @@ SLOT=0
 rm -rf out .venv-a .venv-b
 mkdir -p out
 
-echo "== 1. the user prepares both environments; benchx builds nothing"
+echo "== 1. the user prepares both environments; benchx builds nothing (benchx from $BENCHX_SRC)"
 for SIDE_VERSION in "${SIDES[@]}"; do
   read -r SIDE VERSION <<<"$SIDE_VERSION"
   uv venv -q --python "$PYTHON_VERSION" ".venv-$SIDE"
   # benchx imports pyarrow, and pyarrow 25 refuses to import under numpy 1.x.
-  uv pip install -q --python ".venv-$SIDE/bin/python" "numpy==$VERSION" "pyarrow<25" pyperf -e ../..
+  uv pip install -q --python ".venv-$SIDE/bin/python" "numpy==$VERSION" "pyarrow<25" pyperf -e "$BENCHX_SRC"
   echo "  .venv-$SIDE: numpy $VERSION"
 done
 

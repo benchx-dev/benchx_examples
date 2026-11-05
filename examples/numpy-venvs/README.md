@@ -2,7 +2,7 @@
 
 The same code, measured under two numpy versions, by separate `bx bench` calls that alternate
 round by round, then compared. This is
-[UC-04](../../../docs/use-cases/UC-04-cross-env.md), "fixed branch, comparing environments":
+[UC-04](https://github.com/benchx-dev/benchx/blob/main/docs/use-cases/UC-04-cross-env.md), "fixed branch, comparing environments":
 `numpy==1.26.4` and `numpy==2.0.2` cannot be imported in one process, so each side runs in its
 own environment, and a shell script drives the loop.
 
@@ -11,11 +11,19 @@ You prepare the environments and enter them; benchx builds nothing and activates
 ## Run it
 
 You need [`uv`](https://docs.astral.sh/uv/) (it fetches Python 3.12, the newest Python with numpy
-1.26.4 wheels) and network access the first time. Then, from this directory:
+1.26.4 wheels) and network access the first time. You also need benchx, installed in editable
+mode from a checkout (it reads its schemas from there), in the active environment. Then, from
+this directory:
 
 ```console
+$ git clone https://github.com/benchx-dev/benchx.git
+$ python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
+$ pip install -e benchx/prototype
 $ ./run.sh
 ```
+
+The script installs that same checkout in both venvs. It finds it from the benchx in the active
+environment; `BENCHX_SRC=<checkout>/prototype ./run.sh` names it instead.
 
 The versions (`NUMPY_A`, `NUMPY_B`), the Python and the number of rounds are set at the top of
 `run.sh`. Everything it creates is in `.venv-a`, `.venv-b` and `out/`, all git-ignored.
@@ -66,7 +74,7 @@ The versions (`NUMPY_A`, `NUMPY_B`), the Python and the number of rounds are set
 
 ## UC-04's spellings, and the prototype's
 
-[UC-04](../../../docs/use-cases/UC-04-cross-env.md) is kept as written, and uses spellings the
+[UC-04](https://github.com/benchx-dev/benchx/blob/main/docs/use-cases/UC-04-cross-env.md) is kept as written, and uses spellings the
 prototype does not have. This is how each corresponds:
 
 - `benchx new-session` (`SESSION=$(...)`) → no command. The session is the run key, chosen by the
