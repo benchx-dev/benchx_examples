@@ -11,3 +11,5 @@ Currently, the following examples are provided:
   comparison profiles (`demo`) and one of the target provider contract (`archery-local`).
 - `examples/pyperf-suite`: a suite of Python functions benchmarked with `bx bench`, results stored locally.
 - `examples/matmul-params`: parametrized benchmarks to compare installed NumPy and PyTorch
+- `examples/numpy-venvs`: the same benchmarks under two NumPy versions, each in its own virtual
+  environment, alternated round by round and compared.
