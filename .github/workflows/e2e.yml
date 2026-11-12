@@ -1,0 +1,17 @@
+name: E2E pyperf-suite
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pyperf-suite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bootstrap
+        run: echo "Workflow registered successfully"
+
