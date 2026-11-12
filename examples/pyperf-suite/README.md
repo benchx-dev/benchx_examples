@@ -4,24 +4,69 @@ A runnable example of a benchmark suite. `bench_suite.py` holds five small
 functions; `bx bench` runs each one under [pyperf](https://pyperf.readthedocs.io),
 writes benchx result files, delivers them to a local store, and prints a table.
 
-## Run it
+## First, install benchx
 
-Install benchx in editable mode from a checkout (it reads its schemas from there), with
-pyperf, then run the script from the root of this repository:
+We install `benchx` with `pyperf`
 
-```sh
-git clone https://github.com/benchx-dev/benchx.git
-python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
-pip install -e benchx/prototype pyperf
-bash examples/pyperf-suite/run.sh
+```
+$ python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
+$ pip install pyperf benchx
 ```
 
-The script runs `bx` and `python` from the active environment, so benchx and pyperf must
-be installed there; the workers use that same `python`. Extra arguments go to
+## Benchmarks
+
+In the simplest case, benchmarks are plain python functions. Here is an example suite
+of several small microbenchmarks:
+
+```sh
+head -20 bench_suite.py
+```
+
+(here we only show one benchmark function out of five in the suite).
+
+```text
+"""Example benchmark suite: plain Python functions, one case each.
+
+`bx bench bench_suite.py` runs every function named bench_* or benchmark_*.
+Name functions on the command line to run only those:
+    bx bench bench_suite.py bench_sorted bench_join
+
+Each function is the timed body; pyperf calls it many times. Do your setup
+at module level (it runs once per worker process, outside the timing).
+"""
+
+import os
+
+DATA = list(range(2000, 0, -1))
+WORDS = [f"word{i}" for i in range(500)]
+
+
+def bench_sorted():
+    sorted(DATA)
+```
+
+Additionally, this directory contains two additional optional files: `benchx.conf.json`
+is an optional configuration file, and `run.sh` is a helper script which demonstrates.
+
+## Run the benchmarks
+
+The main CLI entry point for the `benchx` package is the `bx` executable, which
+supports several subcommands. The first subcommand is `bx bench` which accepts the
+name of the suite or a selection of benchmarks, and runs it: to run the whole suite,
+use `$ bx bench bench_suite.py`. Here we demonstrate several `bx` subcommands, in a
+shell script (see below for specific steps the script):
+
+
+```sh
+bash ./run.sh
+```
+
+The script runs `bx` and `python` from the active environment, so `benchx` and `pyperf`
+must be installed there; the workers use that same `python`. Extra arguments go to
 `bx bench` in step 1 and win over the config file, e.g. `./run.sh --processes 20`.
-It takes about 20 seconds. Nothing outside this directory changes: the local store is
-`out/store.parquet` (`paths.store` in `benchx.conf.json`), and `out/` is deleted at the start
-of each run.
+On a particular machine, the run takes about 20 seconds.
+Nothing outside the root directory changes: the local store is `out/store.parquet`
+(`paths.store` in `benchx.conf.json`).
 
 ## What goes in
 
