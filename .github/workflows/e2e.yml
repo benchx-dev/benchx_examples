@@ -1,7 +1,16 @@
-name: E2E pyperf-suite
+name: E2E
 
+# One job per example, each calling the reusable workflow. The `paths` filter below applies
+# to the whole workflow, so extend it when an example is added.
 on:
   push:
+    branches: [main]
+    paths:
+      - "examples/pyperf-suite/**"
+      - "scripts/execute_markdown.py"
+      - ".github/workflows/e2e.yml"
+      - ".github/workflows/reusable-example.yml"
+
   pull_request:
   workflow_dispatch:
 
@@ -10,8 +19,9 @@ permissions:
 
 jobs:
   pyperf-suite:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Bootstrap
-        run: echo "Workflow registered successfully"
-
+    uses: ./.github/workflows/reusable-example.yml
+    with:
+      example: pyperf-suite
+      benchx-source: pypi
+      examples-repository: ${{ github.repository }}
+      examples-ref: ${{ github.sha }}
