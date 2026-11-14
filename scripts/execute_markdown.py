@@ -1,5 +1,3 @@
-
-#!/usr/bin/env python3
 """Execute Markdown examples and generate documentation.
 
 Conventions:

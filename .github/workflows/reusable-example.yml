@@ -1,0 +1,153 @@
+name: Reusable example E2E
+
+# Executes examples/<example>/README.md with scripts/execute_markdown.py and uploads
+# three artifacts: logs-<example>, docs-<example> (the generated page) and results-<example>
+# (the example's out/ directory).
+#
+#   benchx-source: pypi      the released BenchX; used by the benchx_examples own CI
+#   benchx-source: checkout  the calling repository's checkout, which must be benchx;
+#                            used by benchx's CI
+#
+# The `example` input generalizes paths and artifact names, not the environment: the
+# install steps below fit examples that need only benchx, pyperf and the runner. Add
+# example-specific setup here, or a specialized workflow, as more examples are migrated.
+
+on:
+  workflow_call:
+    inputs:
+      example:
+        description: Directory name under examples/
+        required: true
+        type: string
+      benchx-source:
+        description: "Where BenchX comes from: pypi or checkout"
+        required: true
+        type: string
+      examples-ref:
+        description: Branch, tag or commit of benchx_examples to run
+        required: true
+        type: string
+      examples-repository:
+        description: >-
+          Repository to take the examples from. The benchx_examples own workflow passes
+          github.repository, so that runs in a fork use the fork's commits.
+        required: false
+        type: string
+        default: benchx-dev/benchx_examples
+
+permissions:
+  contents: read
+
+jobs:
+  example:
+    name: BenchX from ${{ inputs.benchx-source }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXAMPLE: ${{ inputs.example }}
+      BENCHX_SOURCE: ${{ inputs.benchx-source }}
+
+    steps:
+      - name: Validate inputs
+        run: |
+          case "$BENCHX_SOURCE" in
+            pypi|checkout) ;;
+            *) echo "Invalid benchx-source" >&2; exit 1 ;;
+          esac
+          case "$EXAMPLE" in
+            ""|*[!a-zA-Z0-9_-]*) echo "Invalid example name" >&2; exit 1 ;;
+          esac
+
+      - name: Check out benchx_examples
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.examples-repository }}
+          ref: ${{ inputs.examples-ref }}
+          path: benchx_examples
+          persist-credentials: false
+
+      # No `repository`: this is the calling repository, which is benchx in this mode.
+      - name: Check out benchx
+        if: inputs.benchx-source == 'checkout'
+        uses: actions/checkout@v4
+        with:
+          path: benchx
+          persist-credentials: false
+
+      # Only the checkout mode has a lock file to key the cache on.
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: ${{ inputs.benchx-source == 'checkout' }}
+          cache-dependency-glob: benchx/uv.lock
+
+      # The example scripts run plain `python` and `bx`, and the benchmark workers use the
+      # same `python`, so the environment goes on the PATH.
+      - name: Install BenchX from PyPI
+        if: inputs.benchx-source == 'pypi'
+        run: |
+          uv python install 3.13
+          uv venv --python 3.13 "$RUNNER_TEMP/venv"
+          uv pip install --python "$RUNNER_TEMP/venv/bin/python" benchx pyperf markdown-it-py
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+
+      # An editable install, which is where BenchX reads its schemas from. The `test`
+      # extra brings pyperf.
+      - name: Install BenchX from the checkout
+        if: inputs.benchx-source == 'checkout'
+        working-directory: benchx
+        run: |
+          uv python install 3.13
+          uv sync --extra test --python 3.13
+          uv pip install --python .venv/bin/python markdown-it-py
+          echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      # `benchx` should be under site-packages for pypi and under benchx/src for checkout.
+      - name: Show what is under test
+        run: |
+          echo "python: $(python --version) ($(command -v python))"
+          echo "bx: $(command -v bx)"
+          echo "benchx: $(python -c 'import benchx; print(benchx.__file__)')"
+          echo "pyperf: $(python -c 'import pyperf; print(pyperf.__version__)')"
+          if [ -d benchx ]; then
+            echo "benchx checkout: $(git -C benchx rev-parse --short HEAD)"
+          fi
+          echo "benchx_examples: $(git -C benchx_examples rev-parse --short HEAD)"
+
+      # Run from the root of the examples checkout, so that annotations carry a path
+      # relative to the repository. The generated page and the logs go outside it: BenchX
+      # records the state of the whole examples tree, and new files in it could make
+      # later results dirty.
+      - name: Execute example
+        working-directory: benchx_examples
+        run: |
+          python scripts/execute_markdown.py \
+            --source "examples/$EXAMPLE/README.md" \
+            --output "../generated/$EXAMPLE/$EXAMPLE.md" \
+            --logs "../logs/$EXAMPLE"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ inputs.example }}
+          path: logs/${{ inputs.example }}/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload generated documentation
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-${{ inputs.example }}
+          path: generated/${{ inputs.example }}/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ inputs.example }}
+          path: benchx_examples/examples/${{ inputs.example }}/out/
+          if-no-files-found: ignore
+          retention-days: 14

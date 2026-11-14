@@ -16,13 +16,11 @@ $ pip install pyperf benchx
 ## Benchmarks
 
 In the simplest case, benchmarks are plain python functions. Here is an example suite
-of several small microbenchmarks:
+of several small microbenchmarks (here we only show one function out of five in the suite):
 
 ```sh
 head -20 bench_suite.py
 ```
-
-(here we only show one benchmark function out of five in the suite).
 
 ```text
 """Example benchmark suite: plain Python functions, one case each.
@@ -45,8 +43,9 @@ def bench_sorted():
     sorted(DATA)
 ```
 
-Additionally, this directory contains two additional optional files: `benchx.conf.json`
-is an optional configuration file, and `run.sh` is a helper script which demonstrates.
+Additionally, this directory contains two additional files: `benchx.conf.json`
+is an optional configuration file, and `run.sh` is a helper script which demonstrates
+basic CLI commands.
 
 ## Run the benchmarks
 
@@ -148,7 +147,8 @@ bench_join         3.585 us  3.543 us ± 272.4 ns  3.236 us .. 3.997 us  15  suc
 underneath. A `[warning]` after the status means the result carries a quality warning,
 such as `env-mismatch`.
 
-Files, under `out/all/` and `out/env/`:
+Files, under `out/all/`, `out/env/` and `out/again/` (one directory for each of the first
+three `bx bench` calls in `run.sh`):
 
 - `<run-key>_<case>_wall-time.json`: one benchx result per case (schema `measurement-result`;
   with `-e` the name also carries the percent-encoded parameters, as in
@@ -165,8 +165,9 @@ Files, under `out/all/` and `out/env/`:
   script that ran the function; `.worker-env.json`: the environment a worker really had;
   `.stdout` and `.stderr`.
 
-The local store, `out/home/store.parquet`, holds the results. `run.sh` reads it back
-(your numbers and fingerprints will differ):
+The local store, `out/store.parquet`, holds the results. `run.sh` reads it back, and
+keeps what `bx series` and `bx history` print in `out/series.txt`, `out/join-series.txt`
+and `out/history.txt` (your numbers and fingerprints will differ):
 
 ```
 $ bx series --quantity wall-time

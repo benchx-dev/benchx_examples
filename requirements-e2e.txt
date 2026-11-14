@@ -1,3 +1,0 @@
-benchx
-pyperf
-markdown-it-py
