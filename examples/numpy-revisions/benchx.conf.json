@@ -1,0 +1,52 @@
+{
+ "schema_version": "benchx/config/0.1.0",
+ "project": "numpy",
+ "source": {
+  "uri": "https://github.com/numpy/numpy.git"
+ },
+ "adapter": {
+  "name": "asv",
+  "suite": "benchmarks/benchmarks",
+  "quantities": [
+   "wall-time"
+  ],
+  "precision": {
+   "repetitions": {
+    "mode": "fixed",
+    "levels": [
+     {
+      "unit": "process",
+      "n": 5
+     },
+     {
+      "unit": "value",
+      "n": 3
+     }
+    ]
+   },
+   "calibration": {
+    "mode": "adaptive",
+    "minimum_sample_seconds": 0.1
+   },
+   "warmup": {
+    "mode": "count",
+    "n_warmup": 1
+   }
+  }
+ },
+ "compare": {
+  "profile": "revisions"
+ },
+ "collectors": {
+  "numpy-build": {
+   "command": [
+    "python",
+    "{root}/numpy_facts.py"
+   ]
+  }
+ },
+ "paths": {
+  "store": "out/store.parquet",
+  "results": "out"
+ }
+}
