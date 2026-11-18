@@ -123,23 +123,23 @@ NO CHANGE DETECTED (3)
 
 For numpy commit c5ab79c1 (5 rounds):
 bench_function_base.Mean.time_mean  ok
-======== =============
-  size                
--------- -------------
-   1       8.21±0.2μs 
-   10     8.34±0.08μs 
- 100000    162±0.3μs  
-======== =============
+  ======== =============
+    size                
+  -------- -------------
+     1       8.21±0.2μs 
+     10     8.34±0.08μs 
+   100000    162±0.3μs  
+  ======== =============
 
 For numpy commit 8bcb2e72 (5 rounds):
 bench_function_base.Mean.time_mean  ok
-======== =============
-  size                
--------- -------------
-   1       8.12±0.2μs 
-   10     8.36±0.08μs 
- 100000     162±20μs  
-======== =============
+  ======== =============
+    size                
+  -------- -------------
+     1       8.12±0.2μs 
+     10     8.36±0.08μs 
+   100000     162±20μs  
+  ======== =============
 
 No benchmark changed (the verdict is benchx's; --all lists every row).
 ```
