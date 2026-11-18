@@ -15,19 +15,20 @@ pip install pyperf numpy
 pip install torch --index-url https://download.pytorch.org/whl/cpu    # the CPU build
 cd examples/matmul-params
 export BENCHX_HOME=$PWD/out/home      # optional: keep the result store here, not in ~
-bx bench bench_matmul.py --out out
+bx bench bench_matmul.py --out out --run-key mm_
 ```
-
-The CPU build is a few hundred megabytes; the default wheel from PyPI also pulls in the CUDA libraries,
-which this example does not use. (The timings below were taken with numpy 2.5.4 and torch 2.15.0, CPU.)
 
 This uses pyperf's defaults (20 worker processes x 3 values, 0.1 s calibration) and takes
 several minutes, mostly importing torch in every worker.
 
+The `--run-key` argument is optional: if you do not supply it, `benchx` will generate a default
+key. Specifying your own key is only useful if you want to process the stored result yourself
+later (see below for an example).
+
 ## A quick version
 
 ```sh
-bx bench bench_matmul.py --processes 2 --values 2 --min-time 0.01 --out out
+bx bench bench_matmul.py --processes 2 --values 2 --min-time 0.01 --out out --run-key mm
 ```
 
 About 15 seconds. The timings are rougher: each case has 4 values.
@@ -58,6 +59,21 @@ bx bench bench_matmul.py --filter "'torch'"              # a regex: the three to
 A regex is searched in `bench_matmul(10, 'torch')`, the function's name and the argument
 values (not their names). `--filter 'bench_matmul$'` is therefore refused, since `$` leaves
 no room for the arguments; the refusal says so.
+
+
+## Processing the results
+
+Benchmark results are stored as a parquet file according to the results schema, so that you
+can extract and analyze them later. As an example, here is a simple script to extract and
+plot the times for both numpy and pytorch versus the matrix size:
+
+```sh
+python print_sizes.py out/home/store.parquet mm_ 
+```
+
+Here the helper script, `print_sizes.py` takes two cmdline arguments: the path to the
+results store and the run key, extract the benchmarked times, and saves a plot, `times.png`.
+
 
 ## Comparing numpy and torch
 
