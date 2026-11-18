@@ -5,8 +5,7 @@
   "uri": "https://github.com/numpy/numpy.git"
  },
  "adapter": {
-  "name": "asv",
-  "suite": "benchmarks/benchmarks",
+  "name": "pyperf",
   "quantities": [
    "wall-time"
   ],

@@ -1,65 +1,46 @@
 #!/usr/bin/env bash
-# Compare two numpy revisions on one benchmark of numpy's own asv suite, with `bx`.
+# Compare two numpy revisions on numpy's own asv benchmarks, as `spin bench --compare` does.
+# See README.md.
 #
-# usage: ./compare.sh [BASELINE [CONTENDER]]      (tags, branches or commits of $NUMPY)
+#   NUMPY=~/repos/numpy ./compare.sh [-t TEST]... [BASELINE [CONTENDER]]
 #
-# Each revision is built by `spin` in a git worktree of its own, so both builds exist at once.
-# The benchmark is numpy's `bench_function_base.Mean.time_mean`, unchanged, from each
-# revision's own benchmarks/ directory. The sides alternate round by round, one `bx bench`
-# call per side, and `bx compare --run` compares them. See README.md.
+# BASELINE and CONTENDER default to main and the checked-out code. Each is checked out in $NUMPY, which
+# must have no uncommitted changes, and built there: a revision in build-<commit>, the checked-out code
+# in build. TEST is a regular expression for asv's benchmark names, as spin's -t is; without any,
+# every benchmark runs, which takes hours.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-NUMPY=${NUMPY:-~/repos/numpy}                 # a git checkout of numpy; it is never built in
-WORKTREES=${WORKTREES:-$NUMPY-worktrees}      # one worktree per revision, named after it and its commit
-BASELINE=${1:-v2.4.0}
-CONTENDER=${2:-v2.4.3}
-ROUNDS=${ROUNDS:-5}
-CASES='bench_function_base\.Mean\.time_mean\('  # a regex, searched in `name(params)`: time_mean(1), ..., not time_mean_axis
-RUN_KEY=numpy-$BASELINE-vs-$CONTENDER
-unset PYTHONPATH                              # each call below sets its own
+while getopts t: opt; do [ "$opt" = t ] || exit 2; FILTER=${FILTER:+$FILTER|}$OPTARG; done
+shift $((OPTIND - 1))
 
-# prepare REV: a worktree of $NUMPY at REV, built by `spin`. Sets COMMIT, TREE and SITE.
-# `spin build` is incremental, so a worktree that is already built costs almost nothing.
-prepare() {
-  COMMIT=$(git -C "$NUMPY" rev-parse --verify --quiet "$1^{commit}") || {
-    echo "compare.sh: $1 is not a revision of $NUMPY (set NUMPY to a git checkout of numpy)" >&2; exit 1; }
-  TREE=$WORKTREES/${1//[^A-Za-z0-9._-]/-}-${COMMIT:0:10}
-  if [ ! -d "$TREE" ]; then
-    git -C "$NUMPY" worktree add --detach "$TREE" "$COMMIT" >&2
-    git -C "$TREE" submodule update --init >&2
-  fi
-  (cd "$TREE" && spin build) >&2
-  # The directory that holds the built `numpy` package: what the benchmark must import from.
-  SITE=$(dirname "$(ls -d "$TREE"/build-install/usr/lib/python3*/site-packages/numpy | head -n 1)")
-  # benchx does not record PYTHONPATH, so check here that this side imports its own build.
-  local imported
-  imported=$(PYTHONPATH=$SITE python -c 'import numpy; print(numpy.__file__)')
-  case $imported in
-    "$TREE"/build-install/*) echo "  $1: $imported" ;;
-    *) echo "compare.sh: with PYTHONPATH=$SITE, python imports $imported, not the build of $1" >&2; exit 1 ;;
-  esac
-}
+NUMPY=${NUMPY:-~/repos/numpy}
+COMMITS=($(git -C "$NUMPY" rev-parse "${1:-main}^{commit}" "${2:-HEAD}^{commit}" | cut -c1-10))   # before the checkouts move HEAD
+BUILDS=(build-${COMMITS[0]} build-${COMMITS[1]})
+[ $# -ge 2 ] || BUILDS[1]=build
 
-echo "== 1. build both revisions with spin, each in its own worktree"
-mkdir -p "$WORKTREES"
-prepare "$BASELINE";  BASE_COMMIT=$COMMIT; BASE_TREE=$TREE; BASE_SITE=$SITE
-prepare "$CONTENDER"; CONT_TREE=$TREE; CONT_SITE=$SITE
+git -C "$NUMPY" diff --quiet HEAD || { echo "$NUMPY has uncommitted changes" >&2; exit 1; }
+START=$(git -C "$NUMPY" symbolic-ref -q --short HEAD || git -C "$NUMPY" rev-parse HEAD)
+# A checkout includes the submodules, else a build is made of the wrong sources and benchx tags the tree dirty.
+checkout() { git -C "$NUMPY" checkout -q "$1"; git -C "$NUMPY" submodule update --init -q; }
+trap 'checkout "$START"' EXIT
 
-echo "== 2. alternate the sides, round by round: one bx bench call per side and round"
-rm -rf out; mkdir -p out
-# bx bench prints a table and some notes for every call; they go to out/bench.log, shown if a call fails.
-side() {  # side TREE SITE ROUND SLOT: one bx bench call
-  # PYTHONPATH selects the numpy that the benchmark imports. The target is the worktree: its
-  # benchmarks/benchmarks directory (adapter.suite) holds the suite, and its revision is recorded.
-  PYTHONPATH=$2 bx bench "$1" --filter "$CASES" --run-key "$RUN_KEY" --round "$3" --slot "$4" \
-      --out "out/$RUN_KEY" >> out/bench.log 2>&1 || { tail -n 30 out/bench.log >&2; exit 1; }
-}
-for ROUND in $(seq 0 $((ROUNDS - 1))); do
-  side "$BASE_TREE" "$BASE_SITE" "$ROUND" $((2 * ROUND))
-  side "$CONT_TREE" "$CONT_SITE" "$ROUND" $((2 * ROUND + 1))
-  echo "  round $ROUND: $BASELINE, then $CONTENDER"
+for i in 0 1; do
+  checkout "${COMMITS[i]}"
+  (cd "$NUMPY" && spin build -C "${BUILDS[i]}")
 done
 
-echo "== 3. compare: the revisions profile; the baseline is named by its commit"
-bx compare --run "$RUN_KEY" --profile revisions --baseline "${BASE_COMMIT:0:10}" | tee out/compare.txt
+# The sides alternate, round by round: each call has its commit checked out, and imports its build,
+# the version of which (it has the commit in it) is printed.
+rm -rf out
+for round in 0 1 2 3 4; do
+  for i in 0 1; do
+    checkout "${COMMITS[i]}"
+    export PYTHONPATH=$(echo "$NUMPY/${BUILDS[i]}"-install/usr/lib/python*/site-packages)
+    python -c 'import numpy; print(numpy.__version__, numpy.__file__)'   # which numpy this side measures
+    bx bench "$NUMPY" --adapter asv --suite benchmarks/benchmarks ${FILTER:+--filter "$FILTER"} \
+      --run-key numpy-revisions --round $round --slot $((2 * round + i))
+  done
+done
+
+bx compare --run numpy-revisions --baseline "${COMMITS[0]}" --tables
