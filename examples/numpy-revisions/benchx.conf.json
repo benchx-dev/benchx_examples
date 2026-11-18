@@ -36,6 +36,12 @@
  "compare": {
   "profile": "revisions"
  },
+ "provider": {
+  "command": [
+   "python",
+   "provider.py"
+  ]
+ },
  "collectors": {
   "numpy-build": {
    "command": [

@@ -40,7 +40,7 @@ $ pip install benchx
 $ NUMPY=~/repos/numpy ./compare.sh -t 'Mean\.time_mean\(' v2.4.0 v2.4.3
 ```
 
-The usage is `./compare.sh [-t TEST]... [BASELINE [CONTENDER]]`, and everything is optional, as it is
+The usage is `./compare.sh [-t TEST] [BASELINE [CONTENDER]]`, and everything is optional, as it is
 for `spin bench --compare`:
 
 - **Revisions.** Anything that git resolves in `$NUMPY`: tags, branches, `HEAD`, `HEAD^`, commits. They
@@ -50,7 +50,7 @@ for `spin bench --compare`:
   (the file is under `benchmarks/benchmarks/`, without `.py`), and in `name(params)` for each parameter
   combination, as `spin bench -t` does. So `-t bench_function_base` is a file, `-t Mean` a class, and
   `-t Mean.time_mean` a method, and also `time_mean_axis`, since it only searches. The `\(` above ends the
-  name, so that only `time_mean` is selected. Give `-t` more than once to select more. Without `-t`
+  name, so that only `time_mean` is selected. Combine tests with `|` to select more. Without `-t`
   every benchmark runs, which takes hours. A `-t` that selects nothing is refused, and the refusal lists
   the benchmarks whose names are closest to it (a misspelled class or method finds its benchmarks), or the first few that exist.
 
@@ -83,8 +83,9 @@ the directory of the commit `main` is at (`build-c5ab79c14c` for `v2.4.0`).
 | `./compare.sh SHA1` | `SHA1`, built in `build-<SHA1>` | the checked-out code, built in `build` |
 | `./compare.sh SHA1 SHA2` | `SHA1`, built in `build-<SHA1>` | `SHA2`, built in `build-<SHA2>` |
 
-**The checkout.** `bx` measures the tree it is given, and tells the sides apart by their trees, so each
-call has its commit checked out first: ten checkouts for 5 rounds. A checkout includes NumPy's
+**The checkout.** `bx` reads each side's revision from the checkout `$NUMPY` (the provider names it as the
+target's source) and tells the sides apart by their trees, so each call has its commit checked out first:
+ten checkouts for 5 rounds. A checkout includes NumPy's
 submodules (`git submodule update --init`): releases pin other commits of `vendored-meson`, `svml` and
 others than `main` does, and without the update a build is made of the wrong sources and benchx tags the
 tree dirty. When the script ends, also when it fails or is interrupted, the checkout is
@@ -96,7 +97,9 @@ alone. Checking out another revision touches the files that differ, so your next
 The measuring took about a minute on a 64-core machine. `benchx.conf.json` holds the precision
 (5 processes x 3 values per case), and the loop in `compare.sh` the number of rounds (5).
 
-Everything that is generated here is in `out/`, which is git-ignored.
+Everything that is generated here is in `out/`, which is git-ignored. Each run has a run key of its own,
+`numpy-revisions-<date>-<time>` (the store refuses a key it already has), so runs accumulate there: delete
+`out/` to start over, and `bx head --table` lists them.
 
 ## What `compare.sh` does
 
@@ -107,18 +110,23 @@ Everything that is generated here is in `out/`, which is git-ignored.
    its commit and printing which numpy it imports (version and path):
 
    ```
-   PYTHONPATH=<site-packages of the build> bx bench $NUMPY --adapter asv --suite benchmarks/benchmarks \
-       --filter 'Mean\.time_mean\(' --run-key numpy-revisions --round 0 --slot 0
+   BUILD=$NUMPY/build-<commit>-install PYTHONPATH=<site-packages of the build> \
+   bx bench @numpy --adapter asv --suite $NUMPY/benchmarks/benchmarks \
+       --filter 'Mean\.time_mean\(' --run-key numpy-revisions-<date>-<time> --round 0 --slot 0
    ```
 
-   The target is the checkout, `--suite` is the asv suite inside it, and the checkout's revision is what
-   the result records. `--adapter asv` and `--suite` are in the script: the `adapter` block of
-   `benchx.conf.json` names pyperf and holds only the timing, and asv, which is timed by pyperf, takes
-   it too, so the same file serves a pyperf suite. `--filter` is asv's `--bench`, the `-t` options
-   joined by `|` (without `-t` there is none). `PYTHONPATH` is what makes
-   the benchmark's processes import that revision's build. The calls share a run key; `--round` and
-   `--slot` place each one in the alternation, slots counting the calls.
-3. **Compares.** `bx compare --run numpy-revisions --baseline <commit> --tables`; `compare.profile` in
+   The target is `@numpy`: `provider.py`, the target provider named in `benchx.conf.json`, describes it
+   from the environment. It is the build directory `$BUILD`, where the benchmark runs, and the checkout
+   `$NUMPY`, which the result records as its revision. This is how `spin bench` runs asv, in `benchmarks/`
+   against the build: NumPy's unbuilt source tree is never on the path, where its `numpy/` would shadow
+   the build. `--suite` is NumPy's asv suite, by its absolute path: it is inside the checkout, so it
+   is recorded as part of the revision, and each revision has its own. `--adapter asv` and `--suite` are
+   in the script: the `adapter` block of `benchx.conf.json` names pyperf and holds only the timing, and
+   asv, which is timed by pyperf, takes it too, so the same file serves a pyperf suite. `--filter` is
+   asv's `--bench`, the `-t` (without `-t` it is empty, and every benchmark runs). `PYTHONPATH` is what
+   makes the benchmark's processes import that revision's build. The calls share a run key; `--round`
+   and `--slot` place each one in the alternation, slots counting the calls.
+3. **Compares.** `bx compare --run <run key> --baseline <commit> --tables`; `compare.profile` in
    `benchx.conf.json` makes it the `revisions` profile, and `--tables` adds what `spin bench --compare`
    prints: a table of each commit, then one of the changes (only the changed rows). Then the checkout is
    put back.
@@ -128,50 +136,50 @@ Everything that is generated here is in `out/`, which is git-ignored.
 The comparison (your numbers will differ):
 
 ```
-run numpy-revisions  profile revisions  baseline edd9d7c22ba2  contender 63d7b31efb1a
+run numpy-revisions-20261118-160406  profile revisions  baseline edd9d7c22ba2  contender 63d7b31efb1a
   differs: benchmark.revision.key
   caveats: baseline: setup-per-call-unbatched, contender: setup-per-call-unbatched
 
 NO CHANGE DETECTED (3)
-  bench_function_base.Mean.time_mean [size=1] wall-time  effect   -0.18%  noise   0.97%  rounds=5
-  bench_function_base.Mean.time_mean [size=10] wall-time  effect   -0.24%  noise   0.79%  rounds=5
-  bench_function_base.Mean.time_mean [size=100000] wall-time  effect   +0.88%  noise   0.83%  rounds=5
+  bench_function_base.Mean.time_mean [size=1] wall-time  effect   +2.02%  noise   2.34%  rounds=5
+  bench_function_base.Mean.time_mean [size=10] wall-time  effect   -0.72%  noise   2.81%  rounds=5
+  bench_function_base.Mean.time_mean [size=100000] wall-time  effect   +9.22%  noise   9.81%  rounds=5
 
 For numpy commit c5ab79c1 (5 rounds):
 bench_function_base.Mean.time_mean  ok
   ======== ============
     size               
   -------- ------------
-     1      8.26±0.2μs 
-     10     8.33±0.1μs 
-   100000    162±2μs   
+     1      7.51±0.3μs 
+     10     8.04±0.4μs 
+   100000    158±20μs  
   ======== ============
 
 For numpy commit 8bcb2e72 (5 rounds):
 bench_function_base.Mean.time_mean  ok
-  ======== =============
-    size                
-  -------- -------------
-     1      8.26±0.09μs 
-     10     8.41±0.09μs 
-   100000     164±2μs   
-  ======== =============
+  ======== ============
+    size               
+  -------- ------------
+     1      7.55±0.4μs 
+     10     8.21±0.5μs 
+   100000    159±3μs   
+  ======== ============
 
 No benchmark changed (the verdict is benchx's; --all lists every row).
 ```
 
 After the summary, `--tables` prints what `spin bench --compare` prints, laid out as asv lays it out: a
-table of each commit (a value `8.26±0.2μs` per size, the `±` being the spread of the per-round
+table of each commit (a value `7.51±0.3μs` per size, the `±` being the spread of the per-round
 medians), then a table of the changes, which has only the changed rows: here there are none. `--all`
 lists every row, with the noise and the verdict repeated; run by hand,
-`bx compare --run numpy-revisions --baseline c5ab79c14c --tables --all` ends with
+`bx compare --run <run key> --baseline c5ab79c14c --tables --all`, with the run key from the first line above, ends with
 
 ```
 | Change   | Before [c5ab79c1]   | After [8bcb2e72]   |   Ratio |   Noise | Verdict            | Benchmark (Parameter)                      |
 |----------|---------------------|--------------------|---------|---------|--------------------|--------------------------------------------|
-|          | 8.26±0.2μs          | 8.26±0.09μs        |    1.00 |   0.97% | no change detected | bench_function_base.Mean.time_mean(1)      |
-|          | 8.33±0.1μs          | 8.41±0.09μs        |    1.01 |   0.79% | no change detected | bench_function_base.Mean.time_mean(10)     |
-|          | 162±2μs             | 164±2μs            |    1.01 |   0.83% | no change detected | bench_function_base.Mean.time_mean(100000) |
+|          | 7.51±0.3μs          | 7.55±0.4μs         |    1.01 |   2.34% | no change detected | bench_function_base.Mean.time_mean(1)      |
+|          | 8.04±0.4μs          | 8.21±0.5μs         |    1.02 |   2.81% | no change detected | bench_function_base.Mean.time_mean(10)     |
+|          | 158±20μs            | 159±3μs            |    1.00 |   9.81% | no change detected | bench_function_base.Mean.time_mean(100000) |
 ```
 
 A case is a change when its effect, the mean relative difference of the paired rounds, is more than
@@ -190,8 +198,8 @@ copy in its own revision. `out/store.parquet` holds the results (try `bx head --
   adapter does not do that yet: it runs the `python` on the `PATH`, and the target only says which
   tree is recorded. So the two builds are selected by `PYTHONPATH`, one `bx bench` call at a time.
   benchx does not record `PYTHONPATH`, which is why `compare.sh` prints the numpy each call imports.
-- **The suite is each revision's own.** An asv suite outside the checkout being measured does not work
-  with `bx bench` yet. Each result records asv's hash of its benchmark's code in its protocol, so a
+- **The suite is each revision's own.** An asv suite outside the NumPy checkout does not work
+  with `bx bench` yet (a pyperf suite does: see `compare_noasv.sh`). Each result records asv's hash of its benchmark's code in its protocol, so a
   benchmark that was edited between the two revisions starts a new series.
 - **BLAS threads.** A benchmark that calls BLAS, such as `bench_linalg.Eindot.time_matmul_a_b`, uses
   all the cores by default, and is very noisy on a many-core machine: here it gave an effect of +91%
@@ -210,6 +218,8 @@ copy in its own revision. `out/store.parquet` holds the results (try `bx head --
 | File | Role |
 |---|---|
 | `compare.sh` | the driver: builds, the loop, the comparison |
-| `benchx.conf.json` | the project file: the timing (precision, as pyperf takes it; asv takes it too), the collector, the `revisions` profile, the paths. Nothing asv's: `compare.sh` passes `--adapter asv --suite ...` |
+| `compare_noasv.sh` | the same comparison of the same benchmark written as plain pyperf functions, in `np_mean_noasv.py`, a file outside numpy: `bx bench @numpy --adapter pyperf --suite "$PWD/np_mean_noasv.py"`. Same provider, same `benchx.conf.json`. `-t` selects functions by name; without it every `bench_*` function runs. It differs from `compare.sh` only in its `bx bench` line (`--adapter` and `--suite`) and its run keys, `numpy-revisions_noasv-<date>-<time>`, so the runs of the two scripts share `out/` side by side |
+| `provider.py` | the target provider: describes the numpy built in `$BUILD` as the target, with `$NUMPY` as its checkout |
+| `benchx.conf.json` | the project file: the timing (precision, as pyperf takes it; asv takes it too), the collector, the provider, the `revisions` profile, the paths. Nothing asv's: `compare.sh` passes `--adapter asv --suite ...` |
 | `numpy_facts.py` | a context collector: how the numpy this Python imports was built (BLAS, LAPACK, compiler, SIMD). benchx matches these facts between the sides, so they agree only if both builds were configured alike. There is no numpy version among them, on purpose: it would differ. |
 | `environment.yml` | an environment to build and run in |
