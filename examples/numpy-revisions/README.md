@@ -52,7 +52,23 @@ for `spin bench --compare`:
   `-t Mean.time_mean` a method, and also `time_mean_axis`, since it only searches. The `\(` above ends the
   name, so that only `time_mean` is selected. Give `-t` more than once to select more. Without `-t`
   every benchmark runs, which takes hours. A `-t` that selects nothing is refused, and the refusal lists
-  the benchmarks that exist.
+  the benchmarks whose names are closest to it (a misspelled class or method finds its benchmarks), or the first few that exist.
+
+**One combination of parameters.** A parametrized benchmark is searched once per combination, as
+`name(p0, p1, ...)`: the arguments in the order of its `param_names`, each as its Python `repr`, so a string
+is quoted and a tuple keeps its parentheses. `Partition.time_argpartition` takes `dtype, array_type, k`, so
+this selects one case of it, the same in `v2.4.0` and `v2.4.3`:
+
+```
+$ NUMPY=~/repos/numpy ./compare.sh -t "Partition\.time_argpartition\('int16', \('sorted_block', 1000\), 10\)" v2.4.0 v2.4.3
+```
+
+The parentheses are escaped because the filter is a regular expression, and the double quotes keep the shell
+from reading the single ones. The arguments in another order select nothing. When a `-t` names a
+parametrized benchmark and none of its combinations, the refusal says so, gives the order of the parameters
+and one case as it is searched:
+`bench_function_base.Partition.time_argpartition(dtype, array_type, k) is searched as
+bench_function_base.Partition.time_argpartition('float64', ('random',), 10)`.
 
 **Builds.** `spin build` builds each revision in `$NUMPY`, in a build directory of its own, so both builds
 exist at once: a revision in `build-<commit>` (installed in `build-<commit>-install`), the checked-out
@@ -117,35 +133,35 @@ run numpy-revisions  profile revisions  baseline edd9d7c22ba2  contender 63d7b31
   caveats: baseline: setup-per-call-unbatched, contender: setup-per-call-unbatched
 
 NO CHANGE DETECTED (3)
-  bench_function_base.Mean.time_mean [size=1] wall-time  effect   -0.41%  noise   1.59%  rounds=5
-  bench_function_base.Mean.time_mean [size=10] wall-time  effect   +0.58%  noise   0.58%  rounds=5
-  bench_function_base.Mean.time_mean [size=100000] wall-time  effect   -6.34%  noise   6.65%  rounds=5
+  bench_function_base.Mean.time_mean [size=1] wall-time  effect   -0.18%  noise   0.97%  rounds=5
+  bench_function_base.Mean.time_mean [size=10] wall-time  effect   -0.24%  noise   0.79%  rounds=5
+  bench_function_base.Mean.time_mean [size=100000] wall-time  effect   +0.88%  noise   0.83%  rounds=5
 
 For numpy commit c5ab79c1 (5 rounds):
 bench_function_base.Mean.time_mean  ok
-  ======== =============
-    size                
-  -------- -------------
-     1       8.21±0.2μs 
-     10     8.34±0.08μs 
-   100000    162±0.3μs  
-  ======== =============
+  ======== ============
+    size               
+  -------- ------------
+     1      8.26±0.2μs 
+     10     8.33±0.1μs 
+   100000    162±2μs   
+  ======== ============
 
 For numpy commit 8bcb2e72 (5 rounds):
 bench_function_base.Mean.time_mean  ok
   ======== =============
     size                
   -------- -------------
-     1       8.12±0.2μs 
-     10     8.36±0.08μs 
-   100000     162±20μs  
+     1      8.26±0.09μs 
+     10     8.41±0.09μs 
+   100000     164±2μs   
   ======== =============
 
 No benchmark changed (the verdict is benchx's; --all lists every row).
 ```
 
 After the summary, `--tables` prints what `spin bench --compare` prints, laid out as asv lays it out: a
-table of each commit (a value `8.21±0.2μs` per size, the `±` being the spread of the per-round
+table of each commit (a value `8.26±0.2μs` per size, the `±` being the spread of the per-round
 medians), then a table of the changes, which has only the changed rows: here there are none. `--all`
 lists every row, with the noise and the verdict repeated; run by hand,
 `bx compare --run numpy-revisions --baseline c5ab79c14c --tables --all` ends with
@@ -153,9 +169,9 @@ lists every row, with the noise and the verdict repeated; run by hand,
 ```
 | Change   | Before [c5ab79c1]   | After [8bcb2e72]   |   Ratio |   Noise | Verdict            | Benchmark (Parameter)                      |
 |----------|---------------------|--------------------|---------|---------|--------------------|--------------------------------------------|
-|          | 8.21±0.2μs          | 8.12±0.2μs         |    0.99 |   1.59% | no change detected | bench_function_base.Mean.time_mean(1)      |
-|          | 8.34±0.08μs         | 8.36±0.08μs        |    1.00 |   0.58% | no change detected | bench_function_base.Mean.time_mean(10)     |
-|          | 162±0.3μs           | 162±20μs           |    1.00 |   6.65% | no change detected | bench_function_base.Mean.time_mean(100000) |
+|          | 8.26±0.2μs          | 8.26±0.09μs        |    1.00 |   0.97% | no change detected | bench_function_base.Mean.time_mean(1)      |
+|          | 8.33±0.1μs          | 8.41±0.09μs        |    1.01 |   0.79% | no change detected | bench_function_base.Mean.time_mean(10)     |
+|          | 162±2μs             | 164±2μs            |    1.01 |   0.83% | no change detected | bench_function_base.Mean.time_mean(100000) |
 ```
 
 A case is a change when its effect, the mean relative difference of the paired rounds, is more than
