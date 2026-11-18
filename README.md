@@ -13,3 +13,5 @@ Currently, the following examples are provided:
 - `examples/matmul-params`: parametrized benchmarks to compare installed NumPy and PyTorch
 - `examples/numpy-venvs`: the same benchmarks under two NumPy versions, each in its own virtual
   environment, alternated round by round and compared.
+- `examples/pandas-asv`: one benchmark from pandas' own asv suite, run unchanged with the asv
+  adapter under two pandas versions, each in its own virtual environment, and compared.
