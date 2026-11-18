@@ -17,19 +17,17 @@ so the two sides are expected to differ.
 
 ## Run it
 
-You need [`uv`](https://docs.astral.sh/uv/), git, and network access the first time. You also
-need benchx, installed in editable mode from a checkout, in the active environment. Then, from
+You need [`uv`](https://docs.astral.sh/uv/), git, and network access the first time. Then, from
 this directory:
 
 ```console
-$ git clone https://github.com/benchx-dev/benchx.git
-$ python3 -m venv .venv && . .venv/bin/activate    # Python >= 3.11, or any environment you like
-$ pip install -e benchx/prototype
 $ ./run.sh
 ```
 
-The script installs that same checkout in both venvs. It finds it from the benchx in the active
-environment; `BENCHX_SRC=<checkout>/prototype ./run.sh` names it instead.
+benchx itself runs only inside the two venvs, and the script installs it there: the
+benchx of the active environment if there is one (its checkout if it is an editable install,
+else the same version from PyPI), else the latest release from PyPI. To try a benchx checkout
+without installing it anywhere, name it: `BENCHX_SRC=path/to/benchx ./run.sh`.
 
 The tag, the two pandas versions, the case, the Python and the number of rounds are set at the
 top of `run.sh`. Everything it creates is in `pandas/`, `.venv-a`, `.venv-b` and `out/`, all
@@ -71,7 +69,13 @@ git-ignored. A run takes under a minute after the venvs are cached.
      strings.Methods.time_lower       wall-time  effect  -85.40%  noise   1.76%  rounds=3
    ```
 
-   (The numbers vary from run to run.)
+   (The numbers vary from run to run.) `effect` is the contender against the baseline, averaged
+   over the rounds' paired medians: `-85.40%` means pandas 3.1.1 takes about 15% of the time
+   pandas 2.3.3 does, so about 7x faster, well beyond the round-to-round `noise`. `differs`
+   names the environment facts that tell the sides apart: `deps.pandas` is the version the
+   collector printed, and `deps.sha256` is the hash of the collector's whole output, which
+   changes whenever any of its facts do. Here numpy and pyarrow are the same on both sides, so
+   pandas is the one difference.
 5. **Lists the series.** One per environment, because the collected pandas version is part of
    a series' identity. Every point carries the suite's revision (pandas `v3.1.1`), whichever
    pandas it ran under: the target is the checkout the benchmarks come from, and what varies is
@@ -90,7 +94,9 @@ git-ignored. A run takes under a minute after the venvs are cached.
   in the environment the call runs in, and it prints the pandas, numpy and pyarrow it imports.
   That lands in each result's `environment.system.deps`, which is how the `environments`
   comparison knows what differs between the sides.
-- `paths`: the store and the results go in `out/`.
+- `paths`: the store and the results go in `out/`, which `run.sh` clears first, so `bx series`
+  shows this run only. `$BENCHX_HOME` would relocate the store over this setting, so `run.sh`
+  unsets it.
 
 Each result also records the installed project's version (`provenance.info.asv.installed`) and
 asv's hash of the benchmark's code (`protocol.asv.benchmark_version`), so editing the benchmark

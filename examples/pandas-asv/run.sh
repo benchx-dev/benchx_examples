@@ -3,25 +3,42 @@
 # benchmark format, timed by pyperf) under two pandas versions, each in its own venv, alternated
 # round by round, then compared. See README.md for what each step shows.
 #
-# Needs `uv`, git, and an active environment with benchx installed in editable mode from a
-# benchx checkout (`pip install -e <checkout>/prototype`). That checkout is installed in both
-# venvs; set BENCHX_SRC to the directory with its pyproject.toml to name it instead.
+# Needs `uv` and git. Both venvs get the benchx of the active environment: its checkout if it is
+# an editable install, else the same version from PyPI (the latest if there is none). Set
+# BENCHX_SRC to a benchx checkout (the directory with its pyproject.toml) to install that instead.
 # Everything it creates is here: pandas/, .venv-a, .venv-b and out/ (git-ignored).
 # benchx builds nothing, and neither asv nor asv_runner is installed.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# Where the venvs get benchx from: the checkout that the active environment's benchx runs from.
+# Where the venvs get benchx from: BENCHX_SRC, else the checkout of an editable benchx in the
+# active environment, else PyPI, at the active environment's version if it has one.
 BENCHX_SRC=${BENCHX_SRC:-}
 if [ -z "$BENCHX_SRC" ]; then
-  BENCHX_SRC=$(python -c 'import benchx, pathlib; print(pathlib.Path(benchx.__file__).resolve().parents[1])' 2>/dev/null) || true
+  BENCHX_SRC=$(python - 2>/dev/null <<'EOF' || true
+import importlib.metadata as md, json, urllib.parse
+url = {}
+for name in ("benchx", "benchx-prototype"):  # older checkouts install benchx-prototype
+    try:
+        url = json.loads(md.distribution(name).read_text("direct_url.json") or "{}")
+        break
+    except md.PackageNotFoundError:
+        pass
+if url.get("dir_info", {}).get("editable"):
+    print(urllib.parse.unquote(urllib.parse.urlparse(url["url"]).path))
+EOF
+)
 fi
-if [ -z "$BENCHX_SRC" ] || [ ! -f "$BENCHX_SRC/pyproject.toml" ]; then
-  echo "run.sh: cannot find a benchx checkout to install in the venvs." >&2
-  echo "  Install benchx in editable mode in the active environment (pip install -e <checkout>/prototype)," >&2
-  echo "  or set BENCHX_SRC to the directory with benchx's pyproject.toml." >&2
-  exit 1
+if [ -n "$BENCHX_SRC" ]; then
+  BENCHX_REQ=(-e "$BENCHX_SRC")
+else
+  BENCHX_VERSION=$(python -c 'import importlib.metadata as m; print(m.version("benchx"))' 2>/dev/null || true)
+  BENCHX_REQ=("benchx${BENCHX_VERSION:+==$BENCHX_VERSION}")
 fi
+
+# The store is out/store.parquet (benchx.conf.json). $BENCHX_HOME would relocate it, and mix
+# this run's series with whatever else is stored there.
+unset BENCHX_HOME
 
 # The suite is pandas' asv_bench at one tag, the same for both sides: only the installed pandas
 # differs. The case is one parameter combination of one benchmark: `str` is object dtype in
@@ -48,11 +65,11 @@ echo "  pandas/asv_bench at $(git -C pandas rev-parse --short HEAD)"
 rm -rf out .venv-a .venv-b
 mkdir -p out
 
-echo "== 2. the user prepares both environments; benchx builds nothing (benchx from $BENCHX_SRC)"
+echo "== 2. the user prepares both environments; benchx builds nothing (benchx: ${BENCHX_REQ[*]})"
 for SIDE_VERSION in "${SIDES[@]}"; do
   read -r SIDE VERSION <<<"$SIDE_VERSION"
   uv venv -q --python "$PYTHON_VERSION" ".venv-$SIDE"
-  uv pip install -q --python ".venv-$SIDE/bin/python" "pandas==$VERSION" pyarrow pyperf -e "$BENCHX_SRC"
+  uv pip install -q --python ".venv-$SIDE/bin/python" "pandas==$VERSION" pyarrow pyperf "${BENCHX_REQ[@]}"
   echo "  .venv-$SIDE: pandas $VERSION"
 done
 
@@ -74,8 +91,10 @@ done
 echo "== 4. compare: the sides differ in the pandas the collector read"
 bx compare --run "$RUN_KEY" --profile environments --label env \
     --baseline "pandas-$PANDAS_A" | tee out/compare.txt
-grep -q 'differs:.*deps\.pandas' out/compare.txt   # the differing fact is shown
-if grep -q 'failed invariants' out/compare.txt; then echo "the comparison was refused" >&2; exit 1; fi
+if grep -q 'failed invariants' out/compare.txt; then echo "run.sh: the comparison was refused" >&2; exit 1; fi
+if ! grep -q 'differs:.*deps\.pandas' out/compare.txt; then   # the differing fact is shown
+  echo "run.sh: the comparison does not name deps.pandas as differing" >&2; exit 1
+fi
 
 echo "== 5. the series: one per environment, each point at the suite's revision"
 bx series
