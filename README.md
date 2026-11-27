@@ -15,3 +15,5 @@ Currently, the following examples are provided:
   environment, alternated round by round and compared.
 - `examples/pandas-asv`: one benchmark from pandas' own asv suite, run unchanged with the asv
   adapter under two pandas versions, each in its own virtual environment, and compared.
+- `examples/scipy-blas-pixi`: one scipy call under two pixi environments that differ only in
+  the BLAS behind `libblas` (Accelerate or OpenBLAS), alternated round by round and compared.
