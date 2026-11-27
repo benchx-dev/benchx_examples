@@ -1,0 +1,49 @@
+[workspace]
+name = "scipy-blas-pixi"
+channels = ["https://prefix.dev/conda-forge"]
+platforms = ["osx-arm64"]
+requires-pixi = ">=0.85.0"
+
+# benchx would put its store in $BENCHX_HOME if set; empty keeps it at out/store.parquet.
+[activation.env]
+BENCHX_HOME = ""
+
+[dependencies]
+python = "3.15.*"
+scipy = "==1.18.1"
+pyperf = "*"
+pyarrow = "*"
+
+[pypi-dependencies]
+benchx = "*"
+
+[environments]
+openblas = {
+  dependencies.libblas = { version = "==3.11.0", build = "*openblas" },
+}
+accelerate = {
+  dependencies.libblas = { version = "==3.11.0", build = "*accelerate" },
+  tasks.compare = {
+    description = "Compare the accelerate env against the openblas env, after N_ROUNDS rounds of benchmarking (default: 3)",
+    args = [{ arg = "n_rounds", default = "3" }],
+    cmd = "bx compare --run scipy-blas --profile environments --label env --baseline openblas",
+    depends-on = [{ task = "bench-all", args = ["{{ n_rounds }}"] }],
+  },
+}
+
+[tasks]
+clean = {
+  description = "Tidy up output from previous runs",
+  cmd = "rm -rf out",
+}
+_bench = {
+  description = "Benchmark once in the current environment, labelled with its name ($PIXI_ENVIRONMENT_NAME), as round ROUND and slot SLOT of run 'scipy-blas'",
+  args = ["round", "slot"],
+  cmd = "bx bench . --run-key scipy-blas --label env=$PIXI_ENVIRONMENT_NAME --round {{ round }} --slot {{ slot }} --out out/scipy-blas",
+}
+bench-all = {
+  description = "Benchmark alternately in each environment for N_ROUNDS rounds (default: 3, the fewest that give a verdict)",
+  args = [{ arg = "n_rounds", default = "3" }],
+  depends-on = ["clean"],
+  cmd = "./bench_all.sh {{ n_rounds }}",
+}
